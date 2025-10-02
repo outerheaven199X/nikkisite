@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DECOY - Network Honeypot Monitor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #00ff00;
+            min-height: 100vh;
+            background-image: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 0, 0.03) 2px,
+                    rgba(0, 255, 0, 0.03) 4px
+                );
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            border: 2px solid #00ff00;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+            margin-bottom: 0.5rem;
+            letter-spacing: 3px;
+        }
+
+        .header p {
+            color: #ffff00;
+            font-size: 1rem;
+        }
+
+        .back-link {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #000;
+            color: #00ff00;
+            padding: 8px 16px;
+            text-decoration: none;
+            border: 1px solid #00ff00;
+            font-size: 11px;
+            z-index: 1000;
+        }
+
+        .back-link:hover {
+            background: #00ff00;
+            color: #000;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            border: 1px solid #00ff00;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffff00;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #00ff00;
+            text-transform: uppercase;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: transparent;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #00ff00;
+            color: #000;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .panel {
+            border: 1px solid #00ff00;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 1.5rem;
+        }
+
+        .panel h2 {
+            color: #ffff00;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .events-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #333;
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .event-item {
+            padding: 0.75rem;
+            border-bottom: 1px solid #333;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+
+        .event-item:hover {
+            background: rgba(0, 255, 0, 0.1);
+        }
+
+        .event-time {
+            color: #666;
+            margin-right: 1rem;
+        }
+
+        .event-type {
+            color: #ffff00;
+            font-weight: bold;
+            margin-right: 1rem;
+        }
+
+        .event-source {
+            color: #ff6600;
+            margin-right: 1rem;
+        }
+
+        .event-details {
+            color: #00ff00;
+        }
+
+        .honeypot-status {
+            margin-bottom: 1rem;
+        }
+
+        .honeypot-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            border: 1px solid #333;
+            margin-bottom: 0.5rem;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .honeypot-name {
+            color: #00ff00;
+            font-weight: bold;
+        }
+
+        .honeypot-port {
+            color: #ffff00;
+        }
+
+        .status-active {
+            color: #00ff00;
+        }
+
+        .status-inactive {
+            color: #ff0000;
+        }
+
+        .network-map {
+            height: 200px;
+            border: 1px solid #333;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .alert {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff0000;
+            color: #ff0000;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.9);
+            border-top: 1px solid #00ff00;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            color: #666;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+        }
+
+        /* Scrollbar styling */
+        .events-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .events-list::-webkit-scrollbar-track {
+            background: #000;
+        }
+
+        .events-list::-webkit-scrollbar-thumb {
+            background: #00ff00;
+            border-radius: 4px;
+        }
+
+        .events-list::-webkit-scrollbar-thumb:hover {
+            background: #ffff00;
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-link">← PORTFOLIO</a>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🕸️ DECOY</h1>
+            <p>Network Honeypot Monitoring System</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalEvents">0</div>
+                <div class="stat-label">Total Events</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="activeThreats">0</div>
+                <div class="stat-label">Active Threats</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="blockedIPs">0</div>
+                <div class="stat-label">Blocked IPs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="honeypotHits">0</div>
+                <div class="stat-label">Honeypot Hits</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" id="simulateProbe">Simulate Probe</button>
+            <button class="btn" id="simulateScan">Simulate Port Scan</button>
+            <button class="btn" id="simulateConnection">Simulate Connection</button>
+            <button class="btn" id="clearEvents">Clear Events</button>
+            <button class="btn" id="exportLogs">Export Logs</button>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <div class="main-content">
+            <div class="panel">
+                <h2>Live Event Stream</h2>
+                <div class="events-list" id="eventsList">
+                    <div class="event-item">
+                        <span class="event-time">--:--:--</span>
+                        <span class="event-type">SYSTEM</span>
+                        <span class="event-details">Honeypot monitoring system initialized</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>Honeypot Status</h2>
+                <div class="honeypot-status" id="honeypotStatus">
+                    <div class="honeypot-item">
+                        <div>
+                            <span class="honeypot-name">SSH-Trap</span>
+                            <span class="honeypot-port">:22</span>
+                        </div>
+                        <span class="status-active">ACTIVE</span>
+                    </div>
+                    <div class="honeypot-item">
+                        <div>
+                            <span class="honeypot-name">Web-Trap</span>
+                            <span class="honeypot-port">:80</span>
+                        </div>
+                        <span class="status-active">ACTIVE</span>
+                    </div>
+                    <div class="honeypot-item">
+                        <div>
+                            <span class="honeypot-name">FTP-Trap</span>
+                            <span class="honeypot-port">:21</span>
+                        </div>
+                        <span class="status-active">ACTIVE</span>
+                    </div>
+                </div>
+
+                <h2>Network Map</h2>
+                <div class="network-map">
+                    🌐 Network Topology Visualization<br>
+                    <small>Real-time threat mapping</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <span>DECOY v1.0.0 | Network Honeypot Monitor</span>
+        <span id="systemTime">--:--:--</span>
+    </div>
+
+    <script>
+        class DecoyMonitor {
+            constructor() {
+                this.events = [];
+                this.stats = {
+                    totalEvents: 0,
+                    activeThreats: 0,
+                    blockedIPs: 0,
+                    honeypotHits: 0
+                };
+                this.blockedIPs = new Set();
+                this.threatSources = new Set();
+                
+                this.initializeElements();
+                this.bindEvents();
+                this.startSystemMonitoring();
+                this.updateDisplay();
+            }
+
+            initializeElements() {
+                this.eventsList = document.getElementById('eventsList');
+                this.alertContainer = document.getElementById('alertContainer');
+                
+                // Stat elements
+                this.totalEventsEl = document.getElementById('totalEvents');
+                this.activeThreatsEl = document.getElementById('activeThreats');
+                this.blockedIPsEl = document.getElementById('blockedIPs');
+                this.honeypotHitsEl = document.getElementById('honeypotHits');
+                
+                // Control buttons
+                this.simulateProbeBtn = document.getElementById('simulateProbe');
+                this.simulateScanBtn = document.getElementById('simulateScan');
+                this.simulateConnectionBtn = document.getElementById('simulateConnection');
+                this.clearEventsBtn = document.getElementById('clearEvents');
+                this.exportLogsBtn = document.getElementById('exportLogs');
+                
+                this.systemTimeEl = document.getElementById('systemTime');
+            }
+
+            bindEvents() {
+                this.simulateProbeBtn.addEventListener('click', () => this.simulateEvent('probe'));
+                this.simulateScanBtn.addEventListener('click', () => this.simulateEvent('scan'));
+                this.simulateConnectionBtn.addEventListener('click', () => this.simulateEvent('connection'));
+                this.clearEventsBtn.addEventListener('click', () => this.clearEvents());
+                this.exportLogsBtn.addEventListener('click', () => this.exportLogs());
+            }
+
+            startSystemMonitoring() {
+                // Update system time
+                setInterval(() => {
+                    this.systemTimeEl.textContent = new Date().toLocaleTimeString();
+                }, 1000);
+                
+                // Simulate random events
+                setInterval(() => {
+                    if (Math.random() < 0.3) { // 30% chance every 5 seconds
+                        const eventTypes = ['probe', 'scan', 'connection'];
+                        const randomType = eventTypes[Math.floor(Math.random() * eventTypes.length)];
+                        this.simulateEvent(randomType, true);
+                    }
+                }, 5000);
+                
+                // Update time immediately
+                this.systemTimeEl.textContent = new Date().toLocaleTimeString();
+            }
+
+            simulateEvent(type, isAuto = false) {
+                const sourceIPs = [
+                    '192.168.1.100', '10.0.0.50', '172.16.0.25', 
+                    '203.0.113.42', '198.51.100.33', '192.0.2.146',
+                    '185.220.101.32', '45.129.14.12', '91.189.95.15'
+                ];
+                
+                const source = sourceIPs[Math.floor(Math.random() * sourceIPs.length)];
+                const timestamp = new Date().toLocaleTimeString();
+                
+                let event;
+                
+                switch (type) {
+                    case 'probe':
+                        event = {
+                            time: timestamp,
+                            type: 'PROBE',
+                            source: source,
+                            details: `Port probe detected on SSH honeypot from ${source}`,
+                            severity: 'medium'
+                        };
+                        this.stats.honeypotHits++;
+                        break;
+                        
+                    case 'scan':
+                        event = {
+                            time: timestamp,
+                            type: 'SCAN',
+                            source: source,
+                            details: `Port scan detected: ${source} scanning ports 20-1024`,
+                            severity: 'high'
+                        };
+                        this.threatSources.add(source);
+                        this.stats.activeThreats = this.threatSources.size;
+                        break;
+                        
+                    case 'connection':
+                        event = {
+                            time: timestamp,
+                            type: 'CONNECTION',
+                            source: source,
+                            details: `Suspicious connection attempt from ${source} to web honeypot`,
+                            severity: 'low'
+                        };
+                        this.stats.honeypotHits++;
+                        break;
+                }
+                
+                this.addEvent(event);
+                
+                // Chance to block IP on high severity events
+                if (event.severity === 'high' && Math.random() < 0.7) {
+                    this.blockIP(source);
+                }
+                
+                // Show alert for high severity events
+                if (event.severity === 'high' && !isAuto) {
+                    this.showAlert(`High severity event detected from ${source}!`);
+                }
+            }
+
+            addEvent(event) {
+                this.events.unshift(event);
+                this.stats.totalEvents++;
+                
+                // Keep only last 100 events
+                if (this.events.length > 100) {
+                    this.events = this.events.slice(0, 100);
+                }
+                
+                this.updateEventsList();
+                this.updateStats();
+            }
+
+            updateEventsList() {
+                this.eventsList.innerHTML = this.events.map(event => `
+                    <div class="event-item">
+                        <span class="event-time">${event.time}</span>
+                        <span class="event-type">${event.type}</span>
+                        <span class="event-source">${event.source}</span>
+                        <span class="event-details">${event.details}</span>
+                    </div>
+                `).join('');
+            }
+
+            updateStats() {
+                this.totalEventsEl.textContent = this.stats.totalEvents;
+                this.activeThreatsEl.textContent = this.stats.activeThreats;
+                this.blockedIPsEl.textContent = this.stats.blockedIPs;
+                this.honeypotHitsEl.textContent = this.stats.honeypotHits;
+            }
+
+            blockIP(ip) {
+                if (!this.blockedIPs.has(ip)) {
+                    this.blockedIPs.add(ip);
+                    this.stats.blockedIPs = this.blockedIPs.size;
+                    
+                    this.addEvent({
+                        time: new Date().toLocaleTimeString(),
+                        type: 'BLOCK',
+                        source: ip,
+                        details: `IP ${ip} has been automatically blocked`,
+                        severity: 'info'
+                    });
+                }
+            }
+
+            showAlert(message) {
+                const alert = document.createElement('div');
+                alert.className = 'alert';
+                alert.innerHTML = `
+                    <strong>⚠️ SECURITY ALERT:</strong> ${message}
+                    <button onclick="this.parentElement.remove()" style="float: right; background: transparent; border: 1px solid #ff0000; color: #ff0000; padding: 2px 8px; cursor: pointer;">×</button>
+                `;
+                
+                this.alertContainer.appendChild(alert);
+                
+                // Auto-remove after 10 seconds
+                setTimeout(() => {
+                    if (alert.parentElement) {
+                        alert.remove();
+                    }
+                }, 10000);
+            }
+
+            clearEvents() {
+                if (confirm('Clear all events? This action cannot be undone.')) {
+                    this.events = [];
+                    this.stats = {
+                        totalEvents: 0,
+                        activeThreats: 0,
+                        blockedIPs: 0,
+                        honeypotHits: 0
+                    };
+                    this.blockedIPs.clear();
+                    this.threatSources.clear();
+                    
+                    this.updateEventsList();
+                    this.updateStats();
+                    
+                    this.addEvent({
+                        time: new Date().toLocaleTimeString(),
+                        type: 'SYSTEM',
+                        source: 'localhost',
+                        details: 'Event log cleared by administrator',
+                        severity: 'info'
+                    });
+                }
+            }
+
+            exportLogs() {
+                const logData = {
+                    timestamp: new Date().toISOString(),
+                    stats: this.stats,
+                    events: this.events,
+                    blockedIPs: Array.from(this.blockedIPs)
+                };
+                
+                const blob = new Blob([JSON.stringify(logData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `decoy-logs-${Date.now()}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                this.addEvent({
+                    time: new Date().toLocaleTimeString(),
+                    type: 'EXPORT',
+                    source: 'localhost',
+                    details: 'Security logs exported successfully',
+                    severity: 'info'
+                });
+            }
+
+            updateDisplay() {
+                this.updateStats();
+                this.updateEventsList();
+            }
+        }
+
+        // Initialize the monitoring system
+        document.addEventListener('DOMContentLoaded', () => {
+            window.decoyMonitor = new DecoyMonitor();
+            console.log('DECOY Network Honeypot Monitor initialized');
+            console.log('Available commands: simulateEvent(), clearEvents(), exportLogs()');
+        });
+    </script>
+</body>
+</html>

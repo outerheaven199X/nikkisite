@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; frame-src 'self'; base-uri 'none'; form-action 'self'">
+    <title>~/portfolio — terminal</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2016%2016'%3E%3Crect width='16' height='16' fill='black'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="scanline"></div>
+    <div id="app" class="wrap">
+      <section class="hero" aria-labelledby="hero-title">
+        <h1 id="hero-title" class="hero-title"><!-- populated from hero.config.json -->NIKKI KAELAR</h1>
+        <h2 class="hero-sub">
+          <span id="hero-typed" aria-live="polite" aria-atomic="true"></span><span class="cursor" aria-hidden="true"></span>
+        </h2>
+      </section>
+
+      <header class="top">
+        <nav class="tabs" role="tablist" aria-label="Projects">
+          <button data-route="about" class="tab" role="tab" aria-selected="true">ABOUT</button>
+          <button data-route="scriptrx" class="tab" role="tab">SCRIPTRX</button>
+          <button data-route="omni" class="tab" role="tab">OMNI</button>
+          <button data-route="honey" class="tab" role="tab">HONEY</button>
+          <button data-route="databox" class="tab" role="tab">DATABOX</button>
+          <button data-route="help" class="tab" role="tab" aria-controls="pane-help">MORE</button>
+        </nav>
+        <div class="divider"></div>
+        <div class="prompt">~/portfolio ▶ <span id="path">tab: about</span></div>
+      </header>
+
+      <main id="panes" class="panes">
+        <!-- About -->
+        <section id="pane-about" data-pane="about" class="pane" role="tabpanel" aria-labelledby="about">
+          <h1>about</h1>
+          <p>Interactive portfolio showcasing cybersecurity and development tools. Each project is fully functional and demonstrates real capabilities.</p>
+          
+          <h2>Featured Tools</h2>
+          <ul>
+            <li><strong>SCRIPTRX</strong> - AI-powered script generation tool that creates working code in multiple languages</li>
+            <li><strong>DATABOX</strong> - Secure LLM interaction platform with audit logging and prompt injection demos</li>
+            <li><strong>DECOY</strong> - Network honeypot monitoring system with real-time threat visualization</li>
+            <li><strong>OMNI</strong> - API testing and visualization platform with network mapping</li>
+          </ul>
+          
+          <h2>Links</h2>
+          <ul>
+            <li><a href="#" id="dl-resume" rel="noopener">resume.pdf</a> (drop in <code>/site/assets/resume.pdf</code>)</li>
+            <li><a href="#" id="dl-press" rel="noopener">press kit</a> (optional)</li>
+          </ul>
+          <hr />
+          <p><strong>Navigation:</strong> Click tabs above or use Ctrl/⌘+1..6 · <kbd>?</kbd> = help</p>
+          <p><strong>Interactive:</strong> All tools are fully functional - generate scripts, test APIs, monitor networks, and chat with AI systems.</p>
+        </section>
+
+        <!-- Generic project host pane: content injected -->
+        <section id="pane-scriptrx" data-pane="scriptrx" class="pane" hidden></section>
+        <section id="pane-omni" data-pane="omni" class="pane" hidden></section>
+        <section id="pane-honey" data-pane="honey" class="pane" hidden></section>
+        <section id="pane-databox" data-pane="databox" class="pane" hidden></section>
+
+        <!-- Help -->
+        <section id="pane-help" data-pane="help" class="pane" hidden>
+          <h1>help</h1>
+          <p>Use the tab strip or keyboard to switch. Projects load lazily in a sandboxed iframe. If a project has no static UI, its README is shown.</p>
+          <ul>
+            <li>Open tab in a new window: click the ↗ icon on the tab after it loads.</li>
+            <li>If something doesn't render, the project likely needs a build step; see its README.</li>
+          </ul>
+        </section>
+      </main>
+
+      <footer class="status">
+        <span id="status-left">Ctrl/⌘+K: command palette (soon)</span>
+        <span id="status-right">/tools/<span id="crumb">about</span></span>
+      </footer>
+    </div>
+    <script type="module" src="./shell.js"></script>
+  </body>
+  </html>

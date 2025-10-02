@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DATABOX - RAG SYSTEM TERMINAL</title>
+    <link rel="stylesheet" href="databox.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="scanlines"></div>
+    
+    <!-- Back to Portfolio Button -->
+    <div style="position: fixed; top: 10px; right: 10px; z-index: 10000;">
+        <a href="../index.html" style="background: #000; color: #fff; padding: 8px 16px; text-decoration: none; border: 1px solid #333; font-family: 'JetBrains Mono', monospace; font-size: 11px;">← PORTFOLIO</a>
+    </div>
+    
+    <div class="container">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-box">
+                <h1>DATABOX RAG SYSTEM</h1>
+                <div class="status-line">
+                    <span class="status-item">STATUS: <span id="system-status">ONLINE</span></span>
+                    <span class="status-item">MODE: <span id="current-mode">VULNERABLE</span></span>
+                    <span class="status-item">SESSION: <span id="session-id">N/A</span></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN INTERFACE -->
+        <main class="main-interface">
+            <!-- SESSION CONTROLS -->
+            <section class="session-controls">
+                <div class="session-buttons">
+                    <button id="new-session-btn" class="button">NEW SESSION</button>
+                    <button id="clear-history-btn" class="button">CLEAR HISTORY</button>
+                </div>
+            </section>
+
+            <!-- CONTROL PANEL -->
+            <section class="control-panel box">
+                <h2>CONTROL PANEL</h2>
+                <div class="control-grid">
+                    <div class="control-group">
+                        <label for="mode-select">SECURITY MODE:</label>
+                        <select id="mode-select" class="input">
+                            <option value="vulnerable">VULNERABLE</option>
+                            <option value="hardened">HARDENED</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="training-mode-select">LLM SIMULATION:</label>
+                        <select id="training-mode-select" class="input">
+                            <option value="basic">BASIC AI</option>
+                            <option value="gpt4">GPT-4 STYLE</option>
+                            <option value="claude">CLAUDE STYLE</option>
+                            <option value="llama">LLAMA STYLE</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="llm-adapter-select">LLM ADAPTER:</label>
+                        <select id="llm-adapter-select" class="input">
+                            <option value="mock">MOCK (Safe)</option>
+                            <option value="openai">OPENAI GPT</option>
+                            <option value="anthropic">ANTHROPIC CLAUDE</option>
+                            <option value="ollama">OLLAMA LOCAL</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-actions">
+                    <button id="test-llm-btn" class="button">TEST CONNECTION</button>
+                    <button id="view-audit-btn" class="button">VIEW AUDIT LOGS</button>
+                    <button id="export-logs-btn" class="button">EXPORT LOGS</button>
+                </div>
+            </section>
+
+            <!-- CHAT INTERFACE -->
+            <section class="chat-interface box">
+                <h2>CHAT TERMINAL</h2>
+                <div class="chat-container">
+                    <div id="chat-messages" class="chat-messages">
+                        <div class="system-message">
+                            <span class="prompt">DATABOX></span>
+                            <span class="message">System initialized. Ready for queries.</span>
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <div class="input-line">
+                            <span class="prompt">USER></span>
+                            <input type="text" id="chat-input" class="input chat-input" placeholder="Enter your query..." autocomplete="off">
+                            <button id="send-btn" class="button">SEND</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- JAILBREAK SANDBOX -->
+            <section class="jailbreak-sandbox box">
+                <h2>EDUCATIONAL JAILBREAK SANDBOX</h2>
+                <div class="sandbox-controls">
+                    <div class="control-group">
+                        <button id="show-jailbreak-menu-btn" class="button">SHOW JAILBREAK MENU</button>
+                        <button id="run-all-attempts-btn" class="button">RUN ALL ATTEMPTS</button>
+                    </div>
+                    <div class="control-group">
+                        <button id="quick-injection-btn" class="button">QUICK INJECTION TEST</button>
+                        <button id="role-play-btn" class="button">ROLE PLAY ATTACK</button>
+                    </div>
+                    <div class="control-group">
+                        <button id="system-override-btn" class="button">SYSTEM OVERRIDE</button>
+                        <button id="jailbreak-btn" class="button">JAILBREAK ATTEMPT</button>
+                    </div>
+                </div>
+                <div class="sandbox-info">
+                    <p><strong>Educational Purpose:</strong> This sandbox demonstrates real prompt injection and jailbreaking techniques for learning AI security.</p>
+                    <p><strong>Available in Console:</strong> Use <code>DataboxUtils.showJailbreakMenu()</code> for full menu</p>
+                </div>
+            </section>
+
+            <!-- SYSTEM INFO -->
+            <section class="system-info box">
+                <h2>SYSTEM INFORMATION</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="label">RETRIEVED PASSAGES:</span>
+                        <span id="passages-count" class="value">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">INJECTION DETECTED:</span>
+                        <span id="injection-status" class="value">NO</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">TOTAL QUERIES:</span>
+                        <span id="query-count" class="value">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">RESPONSE TIME:</span>
+                        <span id="response-time" class="value">0ms</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- AUDIT LOG VIEWER (Hidden by default) -->
+        <section id="audit-viewer" class="audit-viewer box" style="display: none;">
+            <div class="audit-header">
+                <h2>AUDIT LOG VIEWER</h2>
+                <button id="close-audit-btn" class="button">CLOSE</button>
+            </div>
+            <div class="audit-controls">
+                <div class="control-group">
+                    <label for="log-filter">FILTER:</label>
+                    <select id="log-filter" class="input">
+                        <option value="all">ALL EVENTS</option>
+                        <option value="chat_interaction">CHAT INTERACTIONS</option>
+                        <option value="security_event">SECURITY EVENTS</option>
+                        <option value="injection_detected">INJECTION EVENTS</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <button id="refresh-logs-btn" class="button">REFRESH</button>
+                    <button id="export-audit-btn" class="button">EXPORT</button>
+                </div>
+            </div>
+            <div id="audit-content" class="audit-content">
+                <div class="loading">Loading audit logs...</div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div class="footer-box">
+                <div class="footer-line">
+                    <span>DATABOX v1.0.0 | RAG SYSTEM WITH PROMPT INJECTION DEMONSTRATION</span>
+                </div>
+                <div class="footer-line">
+                    <span>EDUCATIONAL PURPOSE ONLY | DO NOT USE IN PRODUCTION</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="databox.js"></script>
+</body>
+</html>

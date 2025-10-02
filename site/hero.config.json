@@ -1,0 +1,21 @@
+{
+  "title": "NIKKI KAELAR",
+  "descriptors": [
+    "CYBERSECURITY SPECIALIST",
+    "PENETRATION TESTER", 
+    "THREAT HUNTER",
+    "SECURITY RESEARCHER",
+    "DIGITAL FORENSICS ANALYST"
+  ],
+  "animation": {
+    "loop": true,
+    "pauseAfterMs": 1500,
+    "typeMinMs": 25,
+    "typeMaxMs": 60,
+    "eraseMs": 18,
+    "flickerOnSwap": true
+  },
+  "accessibility": {
+    "reducedMotion": "respect"
+  }
+}

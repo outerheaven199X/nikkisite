@@ -1,0 +1,29 @@
+# Ignore embedded git repositories
+CyberDorks/
+DECOY/
+OMNI/
+ScriptRX/
+databox/
+
+# Ignore node_modules
+node_modules/
+*/node_modules/
+
+# Ignore build artifacts
+dist/
+build/
+*.log
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore temporary files
+*.tmp
+*.temp
