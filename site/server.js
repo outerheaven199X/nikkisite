@@ -464,17 +464,6 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Serve files from the public directory (parent directory)
-app.get('/public/*', (req, res) => {
-  const filePath = path.join(__dirname, '..', 'public', req.params[0]);
-  res.sendFile(filePath, (err) => {
-    if (err) {
-      console.log(`File not found: ${filePath}`);
-      res.status(404).send('File not found');
-    }
-  });
-});
-
 // Serve static files and handle SPA routing
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api/')) {
