@@ -11,7 +11,10 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:8080', 'http://localhost:3000', 'https://outerheaven.ink'],
+  credentials: true
+}));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static('.'));
 
@@ -31,12 +34,24 @@ app.post('/api/scriptrx/generate', (req, res) => {
     return res.status(400).json({ error: 'Type and description are required' });
   }
 
-  const script = generateScript(type, description, parameters);
+  // SECURITY: Input validation and sanitization
+  const allowedTypes = ['bash', 'python', 'powershell', 'javascript'];
+  if (!allowedTypes.includes(type)) {
+    return res.status(400).json({ error: 'Invalid script type' });
+  }
+  
+  // Sanitize description to prevent injection
+  const sanitizedDescription = description.replace(/[<>\"'&]/g, '').substring(0, 500);
+  if (!sanitizedDescription.trim()) {
+    return res.status(400).json({ error: 'Description cannot be empty after sanitization' });
+  }
+
+  const script = generateScript(type, sanitizedDescription, parameters);
   
   const scriptObj = {
     id: Date.now(),
     type,
-    description,
+    description: sanitizedDescription,
     parameters,
     script,
     createdAt: new Date().toISOString()
@@ -75,12 +90,18 @@ app.post('/api/databox/chat', async (req, res) => {
     return res.status(400).json({ error: 'Message is required' });
   }
 
+  // SECURITY: Input validation and sanitization
+  const sanitizedMessage = message.replace(/[<>\"'&]/g, '').substring(0, 2000);
+  if (!sanitizedMessage.trim()) {
+    return res.status(400).json({ error: 'Message cannot be empty after sanitization' });
+  }
+
   // Mock LLM response for demo
-  const response = await generateMockLLMResponse(message);
+  const response = await generateMockLLMResponse(sanitizedMessage);
   
   const conversation = {
     id: Date.now(),
-    message,
+    message: sanitizedMessage,
     response,
     model,
     timestamp: new Date().toISOString()
