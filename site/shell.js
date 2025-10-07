@@ -11,6 +11,7 @@ const PROJECTS = {
 };
 
 function setActive(route) {
+  console.log('setActive called with route:', route);
   // Tabs
   $$(".tab").forEach(b => b.setAttribute("aria-selected", String(b.dataset.route === route)));
   // Panes
@@ -18,13 +19,23 @@ function setActive(route) {
   $("#path").textContent = `tab: ${route}`;
   $("#crumb").textContent = route;
   // Lazy mount if needed
-  if (PROJECTS[route]) mountProject(route);
+  if (PROJECTS[route]) {
+    console.log('Mounting project:', route);
+    mountProject(route);
+  } else {
+    console.log('No project found for route:', route);
+  }
 }
 
 async function mountProject(route) {
+  console.log('mountProject called for:', route);
   const cfg = PROJECTS[route];
   const pane = $(`#pane-${route}`);
-  if (!pane || pane.dataset.mounted === "1") return;
+  console.log('Found pane:', pane);
+  if (!pane || pane.dataset.mounted === "1") {
+    console.log('Pane not found or already mounted');
+    return;
+  }
   
   if (cfg.type === "redirect") {
     // For interactive tools, redirect to dedicated pages
