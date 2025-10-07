@@ -52,12 +52,16 @@ async function mountProject(route) {
   } else if (cfg.type === "iframe") {
     const wrap = document.createElement("div");
     wrap.className = "iframe-wrap";
+    wrap.style.width = "100%";
+    wrap.style.height = "600px";
+    wrap.style.border = "1px solid #ccc";
     const f = document.createElement("iframe");
     f.loading = "lazy";
     f.referrerPolicy = "no-referrer";
-    // Sandboxed but same-origin so embedded projects can load their own assets
-    f.sandbox.add("allow-same-origin", "allow-scripts", "allow-forms", "allow-downloads", "allow-popups");
     f.src = cfg.src;
+    f.style.width = "100%";
+    f.style.height = "100%";
+    f.style.border = "none";
     wrap.appendChild(f);
     const bar = document.createElement("div");
     bar.className = "row";
