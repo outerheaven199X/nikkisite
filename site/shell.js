@@ -101,7 +101,7 @@ window.addEventListener("DOMContentLoaded", () => setActive(routeFromHash()));
 // Keyboard: Ctrl/⌘ + 1..6
 window.addEventListener("keydown", (e) => {
   const ix = Number(e.key) - 1;
-  const routes = ["about","databox","omni","decoy","scriptrx","help"];
+  const routes = ["about","databox","omni","honey","scriptrx","help"];
   if ((e.ctrlKey || e.metaKey) && ix >= 0 && ix < routes.length) {
     e.preventDefault();
     goto(routes[ix]);
