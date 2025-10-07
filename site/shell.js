@@ -16,7 +16,8 @@ function setActive(route) {
   // Panes
   $$(".pane").forEach(p => p.hidden = (p.dataset.pane !== route));
   $("#path").textContent = `tab: ${route}`;
-  $("#crumb").textContent = route;
+  const crumb = $("#crumb");            // CURSOR: make breadcrumb optional
+  if (crumb) crumb.textContent = route; // CURSOR: avoid null deref that breaks routing
   // Lazy mount if needed
   if (PROJECTS[route]) mountProject(route);
 }
@@ -28,7 +29,6 @@ async function mountProject(route) {
   
   if (cfg.type === "redirect") {
     // For interactive tools, redirect to dedicated pages
-    console.log('Creating redirect content for:', cfg.title);
     const bar = document.createElement("div");
     bar.className = "row";
     bar.style.marginBottom = "8px";
@@ -49,7 +49,6 @@ async function mountProject(route) {
     
     pane.appendChild(bar);
     pane.appendChild(description);
-    console.log('Content added to pane:', pane);
     
   } else if (cfg.type === "iframe") {
     const wrap = document.createElement("div");
@@ -96,10 +95,7 @@ function routeFromHash() {
 }
 
 // Events
-$$(".tab").forEach(b => b.addEventListener("click", () => {
-  console.log('Tab clicked:', b.dataset.route);
-  goto(b.dataset.route);
-}));
+$$(".tab").forEach(b => b.addEventListener("click", () => goto(b.dataset.route)));
 window.addEventListener("hashchange", () => setActive(routeFromHash()));
 window.addEventListener("DOMContentLoaded", () => setActive(routeFromHash()));
 
