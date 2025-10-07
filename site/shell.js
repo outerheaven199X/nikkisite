@@ -4,10 +4,10 @@ const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
 
 // All projects load interactive web interfaces
 const PROJECTS = {
-  scriptrx:   { title: "SCRIPTRX",   type: "redirect", src: "tools/scriptrx.html" },
-  omni:       { title: "OMNI",       type: "redirect", src: "tools/omni.html" },
-  honey:      { title: "HONEY",      type: "redirect", src: "tools/honey.html" },
-  databox:    { title: "DATABOX",    type: "redirect", src: "tools/databox.html" },
+  scriptrx:   { title: "SCRIPTRX",   type: "iframe", src: "tools/scriptrx.html" },
+  omni:       { title: "OMNI",       type: "iframe", src: "tools/omni.html" },
+  honey:      { title: "HONEY",      type: "iframe", src: "tools/honey.html" },
+  databox:    { title: "DATABOX",    type: "iframe", src: "tools/databox.html" },
 };
 
 function setActive(route) {
