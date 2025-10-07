@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBERDORK - Bug Bounty Dork Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Orbitron:wght@400;500;700&family=Share+Tech+Mono&display=swap');
+        
+        :root {
+            --neon-cyan: #00ffff;
+            --neon-green: #00ff99;
+            --neon-purple: #bc13fe;
+            --neon-pink: #ff00ff;
+            --neon-blue: #00bfff;
+            --neon-yellow: #ffff00;
+            --neon-red: #ff3131;
+            --dark-bg: #0c1016;
+            --darker-bg: #0a0e14;
+            --nav-bg: #080c12;
+            --card-bg: #111824;
+            --card-bg-alt: #14131c;
+            --text-color: #e0e0e0;
+            --subtitle-color: #8a8a8a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* High-tech grid background */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.9)),
+                linear-gradient(90deg, rgba(0,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(rgba(0,255,255,0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 30px 30px, 30px 30px;
+            z-index: -1;
+        }
+        
+        .navbar {
+            background-color: var(--nav-bg);
+            padding: 15px 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Navbar scan line effect */
+        .navbar::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--neon-cyan), transparent);
+            opacity: 0.4;
+            animation: scanline 4s linear infinite;
+        }
+        
+        @keyframes scanline {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--neon-cyan);
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            position: relative;
+        }
+        
+        /* Digital distortion effect */
+        .logo::before {
+            content: "CYBERDORK";
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--neon-purple);
+            clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
+            animation: glitch 3s infinite;
+            opacity: 0.3;
+        }
+        
+        @keyframes glitch {
+            0%, 90%, 100% { transform: translate(0, 0); opacity: 0.3; }
+            91% { transform: translate(-2px, 1px); opacity: 0.5; }
+            92% { transform: translate(2px, -1px); opacity: 0.7; }
+            93% { transform: translate(-1px, -1px); opacity: 0.5; }
+            94% { transform: translate(1px, 1px); opacity: 0.3; }
+        }
+        
+        .tagline {
+            font-size: 0.9rem;
+            color: var(--subtitle-color);
+            margin-top: -5px;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+        
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 5px 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: 'Share Tech Mono', monospace;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+        
+        .nav-links a::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 1px;
+            background: var(--neon-cyan);
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: var(--neon-cyan);
+        }
+        
+        .nav-links a:hover::before {
+            width: 100%;
+        }
+        
+        .nav-links a.active {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+        }
+        
+        .nav-links a.active::before {
+            width: 100%;
+            height: 2px;
+            box-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .dork-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 255, 255, 0.1);
+        }
+        
+        /* Cybersecurity badge corners */
+        .dork-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 40px;
+            height: 40px;
+            border-top: 2px solid var(--neon-cyan);
+            border-left: 2px solid var(--neon-cyan);
+            border-top-left-radius: 7px;
+        }
+        
+        .dork-card::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            border-bottom: 2px solid var(--neon-cyan);
+            border-right: 2px solid var(--neon-cyan);
+            border-bottom-right-radius: 7px;
+        }
+        
+        .section-title {
+            text-align: center;
+            color: var(--neon-cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+            letter-spacing: 2px;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--neon-cyan), transparent);
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            color: var(--text-color);
+            font-size: 1rem;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            font-family: 'Share Tech Mono', monospace;
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+        
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            color: #111;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Share Tech Mono', monospace;
+            letter-spacing: 1px;
+        }
+        
+        .btn::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+        }
+        
+        .btn:hover::before {
+            animation: sheen 1s forwards;
+        }
+        
+        @keyframes sheen {
+            0% {
+                transform: rotate(45deg) translateY(0);
+            }
+            100% {
+                transform: rotate(45deg) translateY(200%);
+            }
+        }
+        
+        .btn-bounty {
+            background-color: var(--neon-cyan);
+        }
+        
+        .btn-bounty:hover {
+            background-color: #00d8d8;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+        }
+        
+        .results-container {
+            margin-top: 40px;
+            display: none;
+        }
+        
+        .results-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: var(--neon-cyan);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+        }
+        
+        .category-container {
+            margin-bottom: 30px;
+        }
+        
+        .category-title {
+            font-size: 1.1rem;
+            color: var(--neon-cyan);
+            margin-bottom: 10px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        
+        .category-title i {
+            margin-right: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .dork-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .dork-link {
+            display: block;
+            text-decoration: none;
+            color: var(--text-color);
+            padding: 8px 10px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            font-family: monospace;
+            font-size: 0.9rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            border-left: 2px solid rgba(0, 255, 255, 0.1);
+        }
+        
+        .dork-link:hover {
+            background-color: rgba(0, 255, 255, 0.1);
+            color: var(--neon-cyan);
+            border-left: 2px solid var(--neon-cyan);
+        }
+        
+        /* Developer section */
+        #about-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .developer-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+        
+        @media (min-width: 992px) {
+            .developer-cards {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .developer-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 255, 255, 0.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            height: 100%;
+        }
+        
+        .developer-card.founder {
+            background-color: var(--card-bg);
+        }
+        
+        .developer-card.contributor {
+            background-color: var(--card-bg-alt);
+        }
+        
+        /* Cyberpunk line patterns */
+        .developer-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(45deg, rgba(0, 255, 255, 0.05), transparent 40%),
+                linear-gradient(to right, rgba(188, 19, 254, 0.05), transparent),
+                radial-gradient(circle at bottom right, rgba(0, 255, 153, 0.05), transparent 60%);
+            z-index: 0;
+        }
+        
+        /* Circuit board pattern */
+        .developer-card::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: 50px 50px;
+            opacity: 0.15;
+            z-index: -1;
+        }
+        
+        .developer-card.founder::after {
+            background-image: 
+                radial-gradient(circle at 25px 25px, var(--neon-cyan) 1px, transparent 1px),
+                linear-gradient(to right, transparent 23px, var(--neon-cyan) 1px, transparent 26px),
+                linear-gradient(to bottom, transparent 23px, var(--neon-cyan) 1px, transparent 26px);
+        }
+        
+        .developer-card.contributor::after {
+            background-image: 
+                radial-gradient(circle at 25px 25px, var(--neon-green) 1px, transparent 1px),
+                linear-gradient(to right, transparent 23px, var(--neon-green) 1px, transparent 26px),
+                linear-gradient(to bottom, transparent 23px, var(--neon-green) 1px, transparent 26px);
+        }
+        
+        /* Cybersecurity corner accents */
+        .developer-card .corner-tl {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 40px;
+            height: 40px;
+            border-top: 2px solid;
+            border-left: 2px solid;
+            border-top-left-radius: 7px;
+        }
+        
+        .developer-card .corner-br {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            border-bottom: 2px solid;
+            border-right: 2px solid;
+            border-bottom-right-radius: 7px;
+        }
+        
+        .developer-card.founder .corner-tl,
+        .developer-card.founder .corner-br {
+            border-color: var(--neon-cyan);
+        }
+        
+        .developer-card.contributor .corner-tl,
+        .developer-card.contributor .corner-br {
+            border-color: var(--neon-green);
+        }
+        
+        .dev-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .dev-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .dev-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .dev-avatar::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            padding: 2px;
+            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-purple));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+        }
+        
+        .founder .dev-avatar::before {
+            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-purple));
+        }
+        
+        .contributor .dev-avatar::before {
+            background: linear-gradient(45deg, var(--neon-green), var(--neon-blue));
+        }
+        
+        .dev-avatar-inner {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(30, 41, 59, 1), rgba(17, 24, 39, 1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .dev-avatar i {
+            font-size: 32px;
+        }
+        
+        .founder .dev-avatar i {
+            color: var(--neon-cyan);
+        }
+        
+        .contributor .dev-avatar i {
+            color: var(--neon-green);
+        }
+        
+        .dev-title {
+            flex: 1;
+        }
+        
+        .dev-title h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .founder .dev-title h3 {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+        
+        .contributor .dev-title h3 {
+            color: var(--neon-green);
+            text-shadow: 0 0 10px rgba(0, 255, 153, 0.3);
+        }
+        
+        .dev-title .dev-role {
+            font-weight: 500;
+            color: var(--text-color);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .dev-divider {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(0, 255, 255, 0.2), transparent);
+            margin: 15px 0;
+        }
+        
+        .contributor .dev-divider {
+            background: linear-gradient(to right, transparent, rgba(0, 255, 153, 0.2), transparent);
+        }
+        
+        .dev-description {
+            line-height: 1.7;
+            letter-spacing: 0.3px;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            font-size: 0.95rem;
+        }
+        
+        .dev-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .skill-tag {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-family: 'Share Tech Mono', monospace;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+        
+        .founder .skill-tag {
+            background-color: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: var(--neon-cyan);
+        }
+        
+        .founder .skill-tag:hover {
+            background-color: rgba(0, 255, 255, 0.15);
+            box-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+        }
+        
+        .contributor .skill-tag {
+            background-color: rgba(0, 255, 153, 0.1);
+            border: 1px solid rgba(0, 255, 153, 0.3);
+            color: var(--neon-green);
+        }
+        
+        .contributor .skill-tag:hover {
+            background-color: rgba(0, 255, 153, 0.15);
+            box-shadow: 0 0 8px rgba(0, 255, 153, 0.3);
+        }
+        
+        .social-links {
+            margin-top: 25px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.3);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .social-link::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            padding: 1px;
+            background: linear-gradient(45deg, var(--neon-cyan), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+        
+        .contributor .social-link::before {
+            background: linear-gradient(45deg, var(--neon-green), transparent);
+        }
+        
+        .social-link:hover {
+            transform: translateY(-3px);
+        }
+        
+        .founder .social-link:hover {
+            color: var(--neon-cyan);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.2);
+        }
+        
+        .contributor .social-link:hover {
+            color: var(--neon-green);
+            box-shadow: 0 5px 15px rgba(0, 255, 153, 0.2);
+        }
+        
+        .social-link:hover::before {
+            opacity: 1;
+        }
+        
+        /* Data breach animation */
+        .data-breach {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            z-index: 2;
+        }
+        
+        .data-breach::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0, 255, 255, 0.5) 70%);
+            animation: pulse 2s infinite;
+        }
+        
+        .contributor .data-breach::before {
+            background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0, 255, 153, 0.5) 70%);
+        }
+        
+        .data-breach i {
+            font-size: 18px;
+        }
+        
+        .founder .data-breach i {
+            color: var(--neon-cyan);
+        }
+        
+        .contributor .data-breach i {
+            color: var(--neon-green);
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(0.9);
+                opacity: 0.5;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(0.9);
+                opacity: 0.5;
+            }
+        }
+        
+        /* Binary code background for about section title */
+        .about-title-container {
+            position: relative;
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+        }
+        
+        .about-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+            position: relative;
+            display: inline-block;
+            z-index: 1;
+        }
+        
+        .about-title-container::before {
+            content: "10010110 01101001 10011001";
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--neon-cyan);
+            opacity: 0.2;
+            letter-spacing: 2px;
+        }
+        
+        .about-title-container::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--neon-cyan), transparent);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+                padding: 15px 1rem;
+            }
+            
+            .buttons-container {
+                flex-direction: column;
+            }
+            
+            .logo {
+                font-size: 1.8rem;
+            }
+            
+            .nav-links {
+                gap: 10px;
+            }
+            
+            .dev-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .developer-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo-container">
+            <div class="logo">CYBERDORK</div>
+            <div class="tagline">Bug Bounty Dork Generator</div>
+        </div>
+        <div class="nav-links">
+            <a href="#" id="home-link" class="active">Home</a>
+            <a href="#" id="bug-bounty-link">Bug Bounty</a>
+            <a href="#" id="about-link">About Developers</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <!-- Bug Bounty Section -->
+        <div id="bug-bounty-section" class="dork-card">
+            <h2 class="section-title">BUG BOUNTY DORK GENERATOR</h2>
+            
+            <input type="text" id="domain-input" class="input-field" placeholder="Enter domain (e.g., example.com)">
+            
+            <div class="buttons-container">
+                <button class="btn btn-bounty" onclick="generateBugBountyDorks()">Generate Bug Bounty Dorks</button>
+            </div>
+            
+            <div id="results" class="results-container">
+                <h3 class="results-title">Generated Dorks</h3>
+                <div id="results-content"></div>
+            </div>
+        </div>
+        
+        <!-- About Developer Section -->
+        <div id="about-section">
+            <div class="about-title-container">
+                <h2 class="about-title">THE SECURITY TEAM</h2>
+            </div>
+            
+            <div class="developer-cards">
+                <!-- Founder Profile -->
+                <div class="developer-card founder">
+                    <div class="corner-tl"></div>
+                    <div class="corner-br"></div>
+                    <div class="data-breach">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    
+                    <div class="dev-content">
+                        <div class="dev-header">
+                            <div class="dev-avatar">
+                                <div class="dev-avatar-inner">
+                                    <i class="fas fa-user-secret"></i>
+                                </div>
+                            </div>
+                            <div class="dev-title">
+                                <h3>VaRieN</h3>
+                                <div class="dev-role">Founder & Lead Security Researcher</div>
+                            </div>
+                        </div>
+                        
+                        <div class="dev-divider"></div>
+                        
+                        <div class="dev-description">
+                            <p>A veteran in cybersecurity with over a decade of experience exposing vulnerabilities in high-profile systems. I specialize in discovering zero-day exploits and have responsibly disclosed critical security flaws to major tech companies across the globe.</p>
+                            <p>My approach combines advanced automation with creative manual techniques to uncover security issues that conventional methods often miss. I've developed several custom vulnerability assessment tools that have revolutionized how security teams approach threat detection.</p>
+                            <p>As an active participant in the security community, I regularly contribute to open-source security projects and mentor emerging ethical hackers. My research has been featured at prestigious security conferences including DEF CON, Black Hat, and OWASP Global AppSec.</p>
+                        </div>
+                        
+                        <div class="dev-skills">
+                            <span class="skill-tag">Zero-Day Research</span>
+                            <span class="skill-tag">Advanced Exploit Development</span>
+                            <span class="skill-tag">Red Team Operations</span>
+                            <span class="skill-tag">Reverse Engineering</span>
+                            <span class="skill-tag">Threat Intelligence</span>
+                            <span class="skill-tag">Cloud Security</span>
+                            <span class="skill-tag">Binary Analysis</span>
+                        </div>
+                        
+                        <div class="social-links">
+                            <a href="#https://github.com/variendarkgirl" class="social-link"><i class="fab fa-github"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" class="social-link"><i class="fas fa-globe"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-hackerrank"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Contributor Profile -->
+                <div class="developer-card contributor">
+                    <div class="corner-tl"></div>
+                    <div class="corner-br"></div>
+                    <div class="data-breach">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    
+                    <div class="dev-content">
+                        <div class="dev-header">
+                            <div class="dev-avatar">
+                                <div class="dev-avatar-inner">
+                                    <i class="fas fa-laptop-code"></i>
+                                </div>
+                            </div>
+                            <div class="dev-title">
+                                <h3>Str1k3r</h3>
+                                <div class="dev-role">Co-Author & Security Engineer</div>
+                            </div>
+                        </div>
+                        
+                        <div class="dev-divider"></div>
+                        
+                        <div class="dev-description">
+                            <p>A specialist in web application security and API vulnerabilities with expertise in automated security testing and DevSecOps integration. I've helped secure critical infrastructure for Fortune 500 companies and government agencies through innovative security solutions.</p>
+                            <p>My approach focuses on developing efficient methodologies that blend security with development workflows, allowing organizations to implement "security as code" principles. I've built several automated scanning frameworks that detect complex vulnerabilities in modern web architectures.</p>
+                            <p>I'm passionate about knowledge sharing and have authored comprehensive security guides that bridge the gap between theoretical concepts and practical implementation. My contributions to bug bounty platforms have helped identify and remediate numerous critical vulnerabilities.</p>
+                        </div>
+                        
+                        <div class="dev-skills">
+                            <span class="skill-tag">Web App Security</span>
+                            <span class="skill-tag">API Security Testing</span>
+                            <span class="skill-tag">DevSecOps</span>
+                            <span class="skill-tag">OSINT Techniques</span>
+                            <span class="skill-tag">Secure Code Review</span>
+                            <span class="skill-tag">Automation</span>
+                            <span class="skill-tag">Bug Bounty</span>
+                        </div>
+                        
+                        <div class="social-links">
+                            <a href="https://github.com/str1k3r0p" class="social-link"><i class="fab fa-github"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" class="social-link"><i class="fas fa-book"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-medium"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Bug Bounty dorks with all categories
+        const bugBountyDorks = {
+            "File Types": [
+                "site:{domain} filetype:pdf",
+                "site:{domain} filetype:doc",
+                "site:{domain} filetype:docx",
+                "site:{domain} filetype:xls",
+                "site:{domain} filetype:xlsx",
+                "site:{domain} filetype:ppt",
+                "site:{domain} filetype:pptx",
+                "site:{domain} filetype:txt",
+                "site:{domain} filetype:csv",
+                "site:{domain} filetype:zip",
+                "site:{domain} filetype:tar",
+                "site:{domain} filetype:gz",
+                "site:{domain} filetype:sql",
+                "site:{domain} filetype:bak"
+            ],
+            "Admin Panels": [
+                "site:{domain} inurl:admin",
+                "site:{domain} inurl:login",
+                "site:{domain} inurl:dashboard",
+                "site:{domain} inurl:wp-admin",
+                "site:{domain} inurl:controlpanel",
+                "site:{domain} inurl:adminpanel",
+                "site:{domain} inurl:administrator",
+                "site:{domain} inurl:moderator",
+                "site:{domain} inurl:webadmin",
+                "site:{domain} inurl:backoffice",
+                "site:{domain} inurl:backend"
+            ],
+            "Sensitive Info": [
+                "site:{domain} \"password\"",
+                "site:{domain} \"config\"",
+                "site:{domain} \"credentials\"",
+                "site:{domain} \"secret\"",
+                "site:{domain} \"api_key\"",
+                "site:{domain} \"private key\"",
+                "site:{domain} \"client_secret\"",
+                "site:{domain} \"access_token\"",
+                "site:{domain} \"dbpassword\"",
+                "site:{domain} \"authorize\"",
+                "site:{domain} \"confidential\""
+            ],
+            "Directory Listing": [
+                "site:{domain} intitle:\"index of\"",
+                "site:{domain} inurl:ftp",
+                "site:{domain} inurl:uploads",
+                "site:{domain} intext:\"Index of /\"",
+                "site:{domain} intitle:\"Directory Listing For\"",
+                "site:{domain} intext:\"Parent Directory\"",
+                "site:{domain} intitle:\"Index of\" intext:\".env\"",
+                "site:{domain} intitle:\"Index of\" intext:\"config.php\"",
+                "site:{domain} intitle:\"Index of\" intext:\"credentials\""
+            ],
+            "Exposed Configuration Files": [
+                "site:{domain} \"config.php\"",
+                "site:{domain} \"settings.py\"",
+                "site:{domain} \"database.yml\"",
+                "site:{domain} \"web.config\"",
+                "site:{domain} inurl:\".env\"",
+                "site:{domain} inurl:\"wp-config.php\"",
+                "site:{domain} inurl:\"configuration.php\"",
+                "site:{domain} inurl:\"settings.json\"",
+                "site:{domain} inurl:\"config.json\"",
+                "site:{domain} inurl:\"application.yaml\""
+            ],
+            "API Endpoints": [
+                "site:{domain} inurl:api | site:*/rest | site:*/v1 | site:*/v2 | site:*/v3",
+                "site:{domain} intext:\"api documentation\"",
+                "site:{domain} inurl:swagger | inurl:api-docs",
+                "site:{domain} inurl:api/admin",
+                "site:{domain} inurl:api/users",
+                "site:{domain} inurl:api/auth",
+                "site:{domain} inurl:graphql",
+                "site:{domain} inurl:api.php",
+                "site:{domain} inurl:api/v1/auth"
+            ],
+            "GraphQL Endpoints": [
+                "site:{domain} inurl:graphql",
+                "site:{domain} inurl:graphiql",
+                "site:{domain} inurl:graphql.php",
+                "site:{domain} inurl:graphql/console",
+                "site:{domain} \"query {\" \"__schema\"",
+                "site:{domain} intitle:\"GraphiQL\"",
+                "site:{domain} inurl:playground"
+            ],
+            "JWT Vulnerabilities": [
+                "site:{domain} intext:\"jwt token\"",
+                "site:{domain} intext:\"Bearer eyJ\"",
+                "site:{domain} intext:\"Authorization: Bearer\"",
+                "site:{domain} inurl:jwt",
+                "site:{domain} inurl:token"
+            ],
+            "OAuth Misconfiguration": [
+                "site:{domain} inurl:callback",
+                "site:{domain} inurl:oauth/authorize",
+                "site:{domain} inurl:redirect_uri",
+                "site:{domain} inurl:return_to",
+                "site:{domain} inurl:oauth/token",
+                "site:{domain} inurl:client_id",
+                "site:{domain} inurl:response_type=token"
+            ],
+            "CORS Misconfiguration": [
+                "site:{domain} intext:\"Access-Control-Allow-Origin: *\"",
+                "site:{domain} intext:\"Access-Control-Allow-Credentials: true\"",
+                "site:{domain} intext:\"crossorigin\""
+            ],
+            "Cloud Storage Misconfigurations": [
+                "site:s3.amazonaws.com \"{domain}\"",
+                "site:blob.core.windows.net \"{domain}\"",
+                "site:googleapis.com \"{domain}\"",
+                "site:drive.google.com \"{domain}\"",
+                "site:dev.azure.com \"{domain}\"",
+                "site:onedrive.live.com \"{domain}\"",
+                "site:digitaloceanspaces.com \"{domain}\"",
+                "site:sharepoint.com \"{domain}\"",
+                "site:s3-external-1.amazonaws.com \"{domain}\"",
+                "site:s3.dualstack.us-east-1.amazonaws.com \"{domain}\"",
+                "site:dropbox.com/s \"{domain}\"",
+                "site:box.com/s \"{domain}\"",
+                "site:docs.google.com inurl:\"/d/\" \"{domain}\"",
+                "site:storage.googleapis.com \"{domain}\"",
+                "site:amazonaws.com intext:\"{domain}\"",
+                "site:firebasestorage.googleapis.com \"{domain}\""
+            ],
+            "WebSockets": [
+                "site:{domain} inurl:websocket",
+                "site:{domain} inurl:socket.io",
+                "site:{domain} intext:\"ws://\"",
+                "site:{domain} intext:\"wss://\"",
+                "site:{domain} \"WebSocket connection\""
+            ],
+            "Mobile API Endpoints": [
+                "site:{domain} intext:\"mobile api\"",
+                "site:{domain} inurl:api/mobile",
+                "site:{domain} inurl:mobileapi",
+                "site:{domain} inurl:app/api",
+                "site:{domain} inurl:mobile/api",
+                "site:{domain} inurl:api/app"
+            ],
+            "SSRF Prone Parameters": [
+                "inurl:http | inurl:url= | inurl:path= | inurl:dest= | inurl:html= | inurl:data= | inurl:domain= | inurl:page= inurl:& site:{domain}",
+                "inurl:proxy | inurl:fetch | inurl:process | inurl:pull | inurl:retrieve inurl:& site:{domain}",
+                "inurl:go | inurl:redirect | inurl:return | inurl:src | inurl:source | inurl:u | inurl:uri | inurl:url inurl:& site:{domain}",
+                "inurl:window | inurl:next | inurl:target | inurl:rurl | inurl:dest inurl:& site:{domain}"
+            ],
+            "XSS Prone Parameters": [
+                "inurl:q= | inurl:s= | inurl:search= | inurl:query= | inurl:keyword= | inurl:lang= inurl:& site:{domain}",
+                "inurl:msg= | inurl:text= | inurl:error= | inurl:title= | inurl:description= | inurl:content= inurl:& site:{domain}",
+                "inurl:name= | inurl:message= | inurl:body= | inurl:feedback= inurl:& site:{domain}"
+            ],
+            "SQL Injection Parameters": [
+                "inurl:id= | inurl:pid= | inurl:category= | inurl:cat= | inurl:action= | inurl:sid= | inurl:dir= inurl:& site:{domain}",
+                "inurl:user= | inurl:uid= | inurl:article= | inurl:item= | inurl:page_id= inurl:& site:{domain}",
+                "inurl:view= | inurl:product= | inurl:news= | inurl:file= | inurl:type= inurl:& site:{domain}"
+            ],
+            "RCE Prone Parameters": [
+                "inurl:cmd | inurl:exec= | inurl:query= | inurl:code= | inurl:do= | inurl:run= | inurl:read= | inurl:ping= inurl:& site:{domain}",
+                "inurl:system= | inurl:os= | inurl:execute= | inurl:shell= | inurl:download= inurl:& site:{domain}",
+                "inurl:eval= | inurl:command= | inurl:execute= | inurl:script= | inurl:payload= inurl:& site:{domain}"
+            ],
+            "Server-Side Template Injection": [
+                "site:{domain} intext:\"{{'7'*7}}\"",
+                "site:{domain} intext:\"${7*7}\"",
+                "site:{domain} intext:\"{{7*7}}\"",
+                "site:{domain} intext:\"<%= 7*7 %>\"",
+                "site:{domain} intext:\"#{7*7}\""
+            ],
+            "Monitoring Systems": [
+                "site:{domain} inurl:nagios",
+                "site:{domain} inurl:zabbix",
+                "site:{domain} inurl:prometheus",
+                "site:{domain} inurl:grafana",
+                "site:{domain} inurl:kibana",
+                "site:{domain} inurl:splunk",
+                "site:{domain} inurl:elasticsearch",
+                "site:{domain} inurl:monitor"
+            ],
+            "Git Repositories": [
+                "site:{domain} inurl:.git",
+                "site:{domain} inurl:.git/HEAD",
+                "site:{domain} inurl:.git/config",
+                "site:{domain} intext:\"Index of /.git\"",
+                "site:{domain} filetype:git"
+            ],
+            "Continuous Integration": [
+                "site:{domain} inurl:jenkins",
+                "site:{domain} inurl:travis",
+                "site:{domain} inurl:circleci",
+                "site:{domain} inurl:bamboo",
+                "site:{domain} inurl:gitlab-ci",
+                "site:{domain} inurl:drone",
+                "site:{domain} intext:\"pipeline\""
+            ],
+            "Authentication Bypasses": [
+                "site:{domain} inurl:debug=true",
+                "site:{domain} inurl:test=true",
+                "site:{domain} inurl:dev=true",
+                "site:{domain} inurl:development=true",
+                "site:{domain} inurl:bypass=true",
+                "site:{domain} inurl:local=true",
+                "site:{domain} inurl:staging=true"
+            ],
+            "Open Redirects": [
+                "site:{domain} inurl:redirect",
+                "site:{domain} inurl:return",
+                "site:{domain} inurl:r=http",
+                "site:{domain} inurl:url=http",
+                "site:{domain} inurl:next=http",
+                "site:{domain} inurl:continue=http",
+                "site:{domain} inurl:returnto=http",
+                "site:{domain} inurl:goto=http"
+            ],
+            "Debug Parameters": [
+                "site:{domain} inurl:debug=true",
+                "site:{domain} inurl:test=true",
+                "site:{domain} inurl:show_err=true",
+                "site:{domain} inurl:debug_mode=true",
+                "site:{domain} inurl:debug_level",
+                "site:{domain} inurl:testing=true",
+                "site:{domain} inurl:dev_mode=true"
+            ],
+            "Hidden Features": [
+                "site:{domain} inurl:beta",
+                "site:{domain} inurl:hidden",
+                "site:{domain} inurl:unreleased",
+                "site:{domain} inurl:upcoming",
+                "site:{domain} inurl:draft",
+                "site:{domain} inurl:private",
+                "site:{domain} inurl:preview",
+                "site:{domain} inurl:testing"
+            ],
+            "Advanced CSP Bypasses": [
+                "site:{domain} intext:\"Content-Security-Policy\"",
+                "site:{domain} intext:\"unsafe-inline\"",
+                "site:{domain} intext:\"unsafe-eval\"",
+                "site:{domain} intext:\"script-src 'self'\"",
+                "site:{domain} intext:\"style-src 'unsafe-inline'\""
+            ]
+        };
+
+        // Navigation functionality
+        document.getElementById('home-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            setActiveNav('home-link');
+            document.getElementById('bug-bounty-section').style.display = 'block';
+            document.getElementById('about-section').style.display = 'none';
+        });
+        
+        document.getElementById('bug-bounty-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            setActiveNav('bug-bounty-link');
+            document.getElementById('bug-bounty-section').style.display = 'block';
+            document.getElementById('about-section').style.display = 'none';
+        });
+        
+        document.getElementById('about-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            setActiveNav('about-link');
+            document.getElementById('bug-bounty-section').style.display = 'none';
+            document.getElementById('about-section').style.display = 'block';
+        });
+        
+        function setActiveNav(id) {
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.getElementById(id).classList.add('active');
+        }
+        
+        function isValidDomain(domain) {
+            const domainRegex = /^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,6}\/?$/i;
+            return domainRegex.test(domain);
+        }
+        
+        function generateBugBountyDorks() {
+            const domainInput = document.getElementById('domain-input').value.trim();
+            if (!isValidDomain(domainInput)) {
+                alert('Please enter a valid domain (e.g., example.com)');
+                return;
+            }
+            
+            const domain = domainInput.replace(/https?:\/\//, '').replace(/\/.*$/, '');
+            const resultsContent = document.getElementById('results-content');
+            resultsContent.innerHTML = '';
+            
+            // Show results container
+            document.getElementById('results').style.display = 'block';
+            
+            // Update results title
+            document.querySelector('.results-title').textContent = `Bug Bounty Dorks for: ${domain}`;
+            
+            // Generate dorks
+            for (const category in bugBountyDorks) {
+                const categoryContainer = document.createElement('div');
+                categoryContainer.className = 'category-container';
+                
+                const categoryTitle = document.createElement('h4');
+                categoryTitle.className = 'category-title';
+                categoryTitle.innerHTML = `<i class="fas fa-angle-right"></i> ${category}`;
+                categoryContainer.appendChild(categoryTitle);
+                
+                const dorkLinks = document.createElement('div');
+                dorkLinks.className = 'dork-links';
+                
+                bugBountyDorks[category].forEach(dork => {
+                    const query = dork.replace(/{domain}/g, domain);
+                    const link = document.createElement('a');
+                    
+                    if (query.startsWith("https://crt.sh")) {
+                        link.href = query;
+                    } else {
+                        link.href = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+                    }
+                    
+                    link.textContent = query;
+                    link.className = 'dork-link';
+                    link.target = '_blank';
+                    dorkLinks.appendChild(link);
+                });
+                
+                categoryContainer.appendChild(dorkLinks);
+                resultsContent.appendChild(categoryContainer);
+            }
+        }
+        
+        function hideResults() {
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('results-content').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
