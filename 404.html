@@ -1,0 +1,11 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Not Found</title>
+<script>
+  // CURSOR: redirect unknown routes back into the app, preserving path
+  const p = location.pathname.replace(/^\/+/, "");
+  if (!p || p === "404.html") location.replace("/site/index.html");
+  else location.replace(`/site/index.html#/${p}${location.search}${location.hash}`);
+</script>
+<noscript><a href="/site/index.html">Go to site</a></noscript>
