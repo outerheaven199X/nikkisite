@@ -145,7 +145,7 @@ window.addEventListener("keydown", (e) => {
         out.textContent = out.textContent.slice(0, -1);
         await pause(anim.eraseMs);
       }
-      if (anim.flickerOnSwap) out.parentElement.classList.toggle("flicker", true), setTimeout(()=>out.parentElement.classList.toggle("flicker", false), 90);
+      if (anim.flickerOnSwap && out.parentElement) { out.parentElement.classList.add("flicker"); setTimeout(()=>out.parentElement.classList.remove("flicker"), 90); }  // CURSOR: valid JS; no ellipsis
     }
     function rand(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
     function pause(ms){ return new Promise(r=>setTimeout(r, ms)); }
