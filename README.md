@@ -1,6 +1,6 @@
-# 🌌 Fractal Parametric Viewer
+# 🌐 NIKKIKAELAR.html
 
-Interactive real-time fractal explorer with parametric controls for mathematical visualization and artistic exploration.
+Professional portfolio website showcasing interactive security tools and development projects with a minimalist, terminal-inspired design.
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](#)
 [![Version](https://img.shields.io/badge/version-1.0.0-blue)](#)
@@ -8,18 +8,18 @@ Interactive real-time fractal explorer with parametric controls for mathematical
 
 ## 🛠 Built With
 
-- **React 18.3.1** — Modern UI framework with hooks
-- **TypeScript 5.6.3** — Type-safe development
-- **esbuild 0.21.5** — Lightning-fast bundling
-- **Canvas API** — High-performance fractal rendering
-- **Web Workers** — Non-blocking computation (planned)
+- **Node.js** — Backend server and tool APIs
+- **Express.js** — Web server framework
+- **HTML5/CSS3** — Frontend structure and styling
+- **Vanilla JavaScript** — Client-side routing and interactions
+- **SQLite** — Data storage for audit logging
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js 18+ 
-- npm or yarn
+- Node.js 18+
+- npm
 
 ### Installation & Run
 
@@ -27,104 +27,94 @@ Interactive real-time fractal explorer with parametric controls for mathematical
 # Install dependencies
 npm install
 
-# Development mode with hot reload
-npm run dev
+# Start the portfolio server
+cd site && npm start
 
-# Build for production
-npm run build
-
-# Serve built application
-npm start
+# Or use the simple server
+cd site && node simple-server.js
 ```
+
+**Default URL:** `http://localhost:8080`
 
 ## 🎮 Usage
 
-### Basic Exploration
+### Portfolio Navigation
 
 ```bash
-npm run dev
+npm start
 ```
 
-Navigate to `http://localhost:5173` and:
+Navigate to `http://localhost:8080` and:
 
-1. **Select fractal type** — Mandelbrot, Julia, Burning Ship, Tricorn, or Multibrot
-2. **Adjust parameters** — Zoom, center point, iterations, color schemes
-3. **Real-time rendering** — Changes update instantly with performance metrics
+1. **Browse sections** — About, Tools, Help
+2. **Click tool tabs** — SCRIPTRX, OMNI, HONEY, DATABOX
+3. **Launch tools** — Interactive demos open in new windows
+4. **Keyboard shortcuts** — Ctrl/⌘ + 1-6 for quick navigation
 
-### Parameter Controls
+### Individual Tools
 
-- **Center X/Y** — Pan around the complex plane
-- **Zoom** — Magnify fractal details (0.1x to 1000x)
-- **Max Iterations** — Detail level vs performance (10-1000)
-- **Color Schemes** — Rainbow, Fire, Ocean, Grayscale, Neon
-- **Julia Parameters** — Real/imaginary components for Julia sets
-- **Power** — Fractal exponent (1.0-10.0)
-- **Bailout** — Escape radius threshold
+Each tool runs independently:
+
+- **SCRIPTRX** — AI-powered script generation for security tools
+- **DATABOX** — LLM interaction platform with audit logging
+- **DECOY** — Network honeypot monitoring system
+- **OMNI** — Open source dashboard with weather and air quality
 
 ## ✨ Features
 
-- **5 Fractal Types** — Mandelbrot, Julia, Burning Ship, Tricorn, Multibrot
-- **Real-time Rendering** — Instant parameter updates with Canvas API
-- **5 Color Schemes** — Rainbow, Fire, Ocean, Grayscale, Neon
-- **Smooth Coloring** — Continuous color gradients for mathematical beauty
-- **Performance Metrics** — Render time and resolution display
+- **Interactive Tool Suite** — 4 fully functional security and utility tools
+- **Terminal Aesthetic** — Monospace fonts and command-line styling
 - **Responsive Design** — Works on desktop and mobile
-- **TypeScript** — Full type safety and IntelliSense
-- **Modern Build** — esbuild for fast development and production builds
+- **Keyboard Navigation** — Ctrl/⌘ + number shortcuts
+- **Real-time Tools** — Live script generation, network monitoring, AI chat
+- **Audit Logging** — Comprehensive activity tracking
+- **Custom Domain** — Served at outerheaven.ink
 
 ## 🖼 Visuals
 
-![Fractal Viewer Interface](https://via.placeholder.com/800x400/1a1a2e/ffffff?text=Fractal+Parametric+Viewer)
+![Portfolio Interface](https://via.placeholder.com/800x400/000000/ffffff?text=NIKKIKAELAR.html+Portfolio)
 
-*Interactive fractal exploration with real-time parameter adjustment and multiple color schemes.*
+*Professional portfolio with interactive security tools and minimalist terminal design.*
 
 ## 🔧 Configuration
 
 ### Environment Variables
 
-No environment variables required for basic operation.
+```bash
+# Server port (default: 8080)
+PORT=3000
 
-### Build Configuration
-
-```typescript
-// scripts/build.ts
-const isProduction = process.env.NODE_ENV === 'production';
+# Database path (for tools with persistence)
+DB_PATH=./data/app.db
 ```
 
-### TypeScript Configuration
+### Tool Configuration
 
-```json
-// tsconfig.json
-{
-  "compilerOptions": {
-    "target": "ES2020",
-    "jsx": "react-jsx",
-    "strict": true
-  }
-}
-```
+Each tool has its own configuration:
+
+- **SCRIPTRX** — Template-based script generation
+- **DATABOX** — LLM adapter configuration
+- **DECOY** — Network monitoring settings
+- **OMNI** — API keys for external services
 
 ## 🧪 Testing
 
 ```bash
-# Run tests (when implemented)
-npm test
+# Test individual tools
+cd RxSCRIPT && npm test
+cd databox && npm test
 
-# Run tests with coverage
-npm run test:coverage
+# Test main site
+cd site && npm test
 ```
-
-*Test suite planned for Q2 2024 with Jest and React Testing Library.*
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create feature branch: `git checkout -b feature/amazing-fractal`
-3. Commit changes: `git commit -m 'Add amazing fractal type'`
-4. Push to branch: `git push origin feature/amazing-fractal`
+2. Create feature branch: `git checkout -b feature/amazing-tool`
+3. Commit changes: `git commit -m 'Add amazing security tool'`
+4. Push to branch: `git push origin feature/amazing-tool`
 5. Open Pull Request
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 ## 📜 License
 
@@ -134,8 +124,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🗺 Roadmap
 
-- **Web Workers** — Offload fractal computation to background threads
-- **Export Features** — Save high-resolution fractal images
-- **Animation System** — Parameter interpolation and keyframe animation
-- **3D Fractals** — Extend to three-dimensional fractal visualization
-- **Shader Support** — GPU-accelerated rendering with WebGL
+- **Enhanced Security Tools** — Additional penetration testing utilities
+- **Real-time Collaboration** — Multi-user tool sessions
+- **API Documentation** — Comprehensive tool API references
+- **Mobile Optimization** — Enhanced mobile tool interfaces
+- **Performance Monitoring** — Tool usage analytics and optimization
