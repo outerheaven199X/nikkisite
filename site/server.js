@@ -15,6 +15,53 @@ app.use(cors({
   origin: ['http://localhost:8080', 'http://localhost:3000', 'https://outerheaven.ink'],
   credentials: true
 }));
+
+// EASTER EGG: Security monitoring middleware
+app.use((req, res, next) => {
+  const suspiciousPatterns = [
+    /\.\./, /etc\/passwd/i, /proc\/self/i, /bin\/sh/i, /cmd\.exe/i,
+    /union\s+select/i, /drop\s+table/i, /insert\s+into/i, /delete\s+from/i,
+    /<script/i, /javascript:/i, /on\w+\s*=/i, /eval\(/i,
+    /burp/i, /sqlmap/i, /nmap/i, /metasploit/i, /nikto/i, /dirb/i,
+    /admin/i, /login/i, /wp-admin/i, /phpmyadmin/i, /\.env/i,
+    /\.git/i, /\.svn/i, /\.htaccess/i, /\.htpasswd/i
+  ];
+  
+  const url = req.url.toLowerCase();
+  const userAgent = (req.get('User-Agent') || '').toLowerCase();
+  
+  // Special Burp Suite detection
+  if (userAgent.includes('burp') || userAgent.includes('portswigger')) {
+    console.log(`🚨 BURP SUITE DETECTED: ${req.ip} - ${userAgent}`);
+    return res.status(418).json({ 
+      error: "I SEE YOU 👁️", 
+      message: "Burp Suite detected! The webmaster knows you're probing. Nice try, but this site is hardened.",
+      timestamp: new Date().toISOString(),
+      ip: req.ip,
+      userAgent: req.get('User-Agent'),
+      note: "All security tools are logged and monitored. Try harder next time."
+    });
+  }
+  
+  const isSuspicious = suspiciousPatterns.some(pattern => 
+    pattern.test(url) || pattern.test(userAgent)
+  );
+  
+  if (isSuspicious) {
+    console.log(`🚨 SUSPICIOUS REQUEST: ${req.ip} - ${req.method} ${req.url} - ${userAgent}`);
+    return res.status(418).json({ 
+      error: "I SEE YOU 👁️", 
+      message: "The webmaster is watching. This isn't a playground for script kiddies.",
+      timestamp: new Date().toISOString(),
+      ip: req.ip,
+      userAgent: req.get('User-Agent'),
+      note: "All requests are logged and monitored."
+    });
+  }
+  
+  next();
+});
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static('.'));
 
@@ -38,6 +85,26 @@ app.post('/api/scriptrx/generate', (req, res) => {
   const allowedTypes = ['bash', 'python', 'powershell', 'javascript'];
   if (!allowedTypes.includes(type)) {
     return res.status(400).json({ error: 'Invalid script type' });
+  }
+  
+  // EASTER EGG: Detect injection attempts
+  const injectionPatterns = [
+    /<script/i, /javascript:/i, /on\w+\s*=/i, /eval\(/i, /function\(/i,
+    /union\s+select/i, /drop\s+table/i, /insert\s+into/i, /delete\s+from/i,
+    /\.\.\//, /\.\.\\/, /etc\/passwd/i, /proc\/self/i, /bin\/sh/i,
+    /burp/i, /sqlmap/i, /nmap/i, /metasploit/i, /payload/i
+  ];
+  
+  const hasInjectionAttempt = injectionPatterns.some(pattern => pattern.test(description));
+  if (hasInjectionAttempt) {
+    console.log(`🚨 INJECTION ATTEMPT DETECTED: ${req.ip} - ${description.substring(0, 100)}`);
+    return res.status(418).json({ 
+      error: "I SEE YOU 👁️", 
+      message: "Nice try, but this isn't your playground. The webmaster is watching.",
+      timestamp: new Date().toISOString(),
+      ip: req.ip,
+      userAgent: req.get('User-Agent')
+    });
   }
   
   // Sanitize description to prevent injection
@@ -88,6 +155,26 @@ app.post('/api/databox/chat', async (req, res) => {
   
   if (!message) {
     return res.status(400).json({ error: 'Message is required' });
+  }
+
+  // EASTER EGG: Detect injection attempts in chat
+  const chatInjectionPatterns = [
+    /ignore\s+previous\s+instructions/i, /jailbreak/i, /developer\s+mode/i,
+    /system\s+prompt/i, /admin\s+password/i, /root\s+access/i,
+    /bypass\s+security/i, /override\s+restrictions/i, /dan\s+mode/i,
+    /tell\s+me\s+secrets/i, /confidential\s+information/i, /internal\s+data/i
+  ];
+  
+  const hasChatInjection = chatInjectionPatterns.some(pattern => pattern.test(message));
+  if (hasChatInjection) {
+    console.log(`🚨 CHAT INJECTION ATTEMPT: ${req.ip} - ${message.substring(0, 100)}`);
+    return res.status(418).json({ 
+      error: "I SEE YOU 👁️", 
+      message: "Prompt injection detected! The webmaster is monitoring all conversations.",
+      timestamp: new Date().toISOString(),
+      ip: req.ip,
+      userAgent: req.get('User-Agent')
+    });
   }
 
   // SECURITY: Input validation and sanitization

@@ -94,6 +94,30 @@ function routeFromHash() {
   return (m && m[1]) || "about";
 }
 
+// EASTER EGG: Frontend security monitoring
+function detectInjectionAttempt(input) {
+  const injectionPatterns = [
+    /<script/i, /javascript:/i, /on\w+\s*=/i, /eval\(/i, /function\(/i,
+    /union\s+select/i, /drop\s+table/i, /insert\s+into/i, /delete\s+from/i,
+    /\.\.\//, /\.\.\\/, /etc\/passwd/i, /proc\/self/i, /bin\/sh/i,
+    /burp/i, /sqlmap/i, /nmap/i, /metasploit/i, /payload/i,
+    /ignore\s+previous\s+instructions/i, /jailbreak/i, /developer\s+mode/i
+  ];
+  
+  return injectionPatterns.some(pattern => pattern.test(input));
+}
+
+// Monitor all form inputs for injection attempts
+document.addEventListener('input', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+    if (detectInjectionAttempt(e.target.value)) {
+      console.log('🚨 Frontend injection attempt detected!');
+      alert('I SEE YOU 👁️\n\nNice try, but the webmaster is watching. This site is hardened against injection attacks.\n\nAll attempts are logged and monitored.');
+      e.target.value = ''; // Clear the malicious input
+    }
+  }
+});
+
 // Events
 $$(".tab").forEach(b => b.addEventListener("click", () => goto(b.dataset.route)));
 window.addEventListener("hashchange", () => setActive(routeFromHash()));
