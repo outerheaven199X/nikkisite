@@ -1,10 +1,11 @@
 // Using built-in Node.js modules for maximum compatibility
+const express = require('express');
+const cors = require('cors');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
-const path = require('path');
-const fs = require('fs').promises;
+const fsPromises = require('fs').promises;
 
 const app = express();
 const PORT = process.env.PORT || 8080;

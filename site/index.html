@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; frame-src 'self'; base-uri 'none'; form-action 'self'">
-    <title>~/portfolio — terminal</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; frame-src 'self'; base-uri 'none'; form-action 'self'">
+    <title>NIKKIKAELAR.html</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2016%2016'%3E%3Crect width='16' height='16' fill='black'/%3E%3C/svg%3E">
     <link rel="stylesheet" href="./styles.css" />
   </head>
@@ -25,7 +25,6 @@
           <button data-route="omni" class="tab" role="tab">OMNI</button>
           <button data-route="honey" class="tab" role="tab">HONEY</button>
           <button data-route="databox" class="tab" role="tab">DATABOX</button>
-          <button data-route="help" class="tab" role="tab" aria-controls="pane-help">MORE</button>
         </nav>
         <div class="divider"></div>
         <div class="prompt">~/portfolio ▶ <span id="path">tab: about</span></div>
@@ -34,25 +33,31 @@
       <main id="panes" class="panes">
         <!-- About -->
         <section id="pane-about" data-pane="about" class="pane" role="tabpanel" aria-labelledby="about">
-          <h1>about</h1>
-          <p>Interactive portfolio showcasing cybersecurity and development tools. Each project is fully functional and demonstrates real capabilities.</p>
+          <h2>WEBMASTER:</h2>
+          <p>I HAVE BEEN A NETIZEN SINCE 1994, WATCHING THE SCAFFOLDING OF EARLY P2P PLATFORMS AND EARLY LANGUAGES EVOLVE INTO WHAT WE HAVE TODAY. I BRING A GENUINE EXPERIENCE OF THREAT HUNTING, OSINT, OFFENSIVE SECURITY, INFORMATION SECURITY, AND SOCIAL ENGINEERING. IN MY SPARE TIME I BUILD TOOLS AND STUDY MUSIC THEORY, GEOGRAPHY, LINGUISTICS, and MYCOLOGY.</p>
           
-          <h2>Featured Tools</h2>
-          <ul>
-            <li><strong>SCRIPTRX</strong> - AI-powered script generation tool that creates working code in multiple languages</li>
-            <li><strong>DATABOX</strong> - Secure LLM interaction platform with audit logging and prompt injection demos</li>
-            <li><strong>DECOY</strong> - Network honeypot monitoring system with real-time threat visualization</li>
-            <li><strong>OMNI</strong> - API testing and visualization platform with network mapping</li>
-          </ul>
+          <p><a href="/public/resume.pdf" rel="noopener">resume.pdf</a></p>
           
-          <h2>Links</h2>
-          <ul>
-            <li><a href="#" id="dl-resume" rel="noopener">resume.pdf</a> (drop in <code>/site/assets/resume.pdf</code>)</li>
-            <li><a href="#" id="dl-press" rel="noopener">press kit</a> (optional)</li>
-          </ul>
+          <p>THIS WEBSITE WAS CREATED USING REACT, TYPESCRIPT, AND ESBUILD, WITH FRACTAL RENDERING POWERED BY THE BROWSER'S CANVAS API FOR REAL-TIME, MATH-DRIVEN VISUALS.</p>
+          
           <hr />
-          <p><strong>Navigation:</strong> Click tabs above or use Ctrl/⌘+1..6 · <kbd>?</kbd> = help</p>
-          <p><strong>Interactive:</strong> All tools are fully functional - generate scripts, test APIs, monitor networks, and chat with AI systems.</p>
+          
+          <h2>TOOLS ON THIS WEBSITE</h2>
+          <ul>
+            <li><strong>RXSCRIPT</strong> - AI-POWERED SCRIPT GENERATION FOR THE MOST POPULAR TOOLS</li>
+            <li><strong>DATABOX</strong> - LLM INTERACTION PLATFORM WITH AUDIT LOGGING AND PROMPT INJECTION DEMOS</li>
+            <li><strong>DECOY</strong> - NETWORK HONEYPOT MONITORING SYSTEM WITH REAL-TIME SYNTHETIC THREAT VISUALIZATION</li>
+            <li><strong>OMNI</strong> - OPEN SOURCE DASHBOARD WITH WEATHER, AIR QUALITY, AND MORE</li>
+          </ul>
+          
+          <p>YOU HAVE THE TOOLS, NOW YOU HAVE TO SET YOURSELF FREE</p>
+          
+          <hr />
+          
+          <div style="text-align: center; margin: 20px 0;">
+            <img src="https://antimeme.io/rabbit.png" alt="White Rabbit" style="max-width: 200px; height: auto;">
+            <p style="font-size: 14px; margin-top: 10px;">FOLLOW THE WHITE RABBIT</p>
+          </div>
         </section>
 
         <!-- Generic project host pane: content injected -->
@@ -61,20 +66,11 @@
         <section id="pane-honey" data-pane="honey" class="pane" hidden></section>
         <section id="pane-databox" data-pane="databox" class="pane" hidden></section>
 
-        <!-- Help -->
-        <section id="pane-help" data-pane="help" class="pane" hidden>
-          <h1>help</h1>
-          <p>Use the tab strip or keyboard to switch. Projects load lazily in a sandboxed iframe. If a project has no static UI, its README is shown.</p>
-          <ul>
-            <li>Open tab in a new window: click the ↗ icon on the tab after it loads.</li>
-            <li>If something doesn't render, the project likely needs a build step; see its README.</li>
-          </ul>
-        </section>
       </main>
 
       <footer class="status">
-        <span id="status-left">Ctrl/⌘+K: command palette (soon)</span>
-        <span id="status-right">/tools/<span id="crumb">about</span></span>
+        <span id="status-left"></span>
+        <span id="status-right">NIKKIKAELAR.html</span>
       </footer>
     </div>
     <script type="module" src="./shell.js"></script>

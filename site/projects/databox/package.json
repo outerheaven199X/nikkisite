@@ -1,0 +1,64 @@
+{
+  "name": "databox",
+  "version": "1.0.0",
+  "description": "A RAG (Retrieval-Augmented Generation) system with SQLite FTS5 for demonstrating prompt injection vulnerabilities and security hardening techniques",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "init-db": "node scripts/init_db.js",
+    "init-db-unix": "./scripts/init_db.sh",
+    "init-db-windows": "powershell -ExecutionPolicy Bypass -File scripts/init_db.ps1",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/ scripts/",
+    "lint:fix": "eslint src/ scripts/ --fix",
+    "format": "prettier --write src/ scripts/",
+    "audit": "node scripts/audit_logs.js",
+    "demo": "node scripts/demo.js",
+    "training-demo": "node scripts/training_demo.js",
+    "clean": "rm -rf data/ logs/ node_modules/",
+    "clean-windows": "powershell -Command \"Remove-Item -Recurse -Force data, logs, node_modules -ErrorAction SilentlyContinue\""
+  },
+  "keywords": [
+    "rag",
+    "retrieval-augmented-generation",
+    "sqlite",
+    "fts5",
+    "prompt-injection",
+    "security",
+    "ai",
+    "llm",
+    "vector-search"
+  ],
+  "author": "outerheaven199X",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
+    "compression": "^1.7.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3",
+    "eslint": "^8.55.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.1.1"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/outerheaven199X/databox.git"
+  },
+  "bugs": {
+    "url": "https://github.com/outerheaven199X/databox/issues"
+  },
+  "homepage": "https://github.com/outerheaven199X/databox#readme"
+}
