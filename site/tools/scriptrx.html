@@ -10,7 +10,7 @@
         }
 
         body {
-            font-family: 'Courier New', Courier, monospace; 
+            font-family: 'Courier New', Courier, monospace;
             font-size: 14px;
             line-height: 1.4;
             background: #fdfdf9;
@@ -25,6 +25,28 @@
         body > * {
             position: relative;
             z-index: 2;
+        }
+
+        /* Back to Portfolio Button */
+        .portfolio-back {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 10000;
+        }
+
+        .portfolio-back a {
+            background: #000;
+            color: #fff;
+            padding: 8px 16px;
+            text-decoration: none;
+            border: 1px solid #333;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 11px;
+        }
+
+        .portfolio-back a:hover {
+            background: #333;
         }
 
         /* Background layers */
@@ -113,7 +135,7 @@
         .box {
             border: 1px solid black;
             padding: 15px;
-            background: white; 
+            background: white;
             margin: 15px 0;
         }
 
@@ -150,13 +172,13 @@
         }
 
         button:hover {
-            background: black; 
-            color: white; 
+            background: black;
+            color: white;
         }
 
         button:disabled {
             opacity: 0.3;
-            cursor: not-allowed; 
+            cursor: not-allowed;
             pointer-events: none;
         }
 
@@ -186,8 +208,8 @@
             background: white;
         }
 
-        .tool-name { 
-            font-weight: bold; 
+        .tool-name {
+            font-weight: bold;
             margin-bottom: 5px;
         }
 
@@ -271,11 +293,16 @@
 <body>
     <div class="scanline"></div>
     
+    <!-- Back to Portfolio Button -->
+    <div class="portfolio-back">
+        <a href="../index.html">← PORTFOLIO</a>
+    </div>
+    
     <div class="header-info">
         <h1>SCRIPTRX SECURITY COMMAND BUILDER<span class="cursor"></span></h1>
         <div class="utc-clock" id="utc-clock">00:00:00</div>
-        </div>
-        
+    </div>
+
     <hr>
 
     <!-- Centered Command Builder -->
@@ -284,7 +311,7 @@
             <div class="box">
                 <h2>SECURITY TOOL COMMAND BUILDER</h2>
         
-                    <div class="form-group">
+        <div class="form-group">
             <label for="tool-type">SELECT TOOL:</label>
             <select id="tool-type" onchange="showToolOptions()">
                 <option value="">-- SELECT SECURITY TOOL --</option>
@@ -294,19 +321,19 @@
                 <option value="sqlmap">SQLMAP - SQL INJECTION TOOL</option>
                 <option value="hydra">HYDRA - LOGIN BRUTE FORCER</option>
                 <option value="gobuster">GOBUSTER - DIRECTORY BUSTER</option>
-                        </select>
-                    </div>
+            </select>
+        </div>
 
         <!-- NMAP Options -->
         <div id="nmap-options" class="tool-options" style="display: none;">
             <h3>NMAP CONFIGURATION</h3>
-                    
-                    <div class="form-group">
+            
+            <div class="form-group">
                 <label for="nmap-target">TARGET:</label>
                 <input type="text" id="nmap-target" placeholder="192.168.1.1 or example.com or 192.168.1.0/24">
-                    </div>
-                    
-                    <div class="form-group">
+            </div>
+
+            <div class="form-group">
                 <label for="nmap-scan-type">SCAN TYPE:</label>
                 <select id="nmap-scan-type">
                     <option value="-sS">TCP SYN Scan (-sS) [Default]</option>
@@ -319,9 +346,9 @@
                     <option value="-sF">TCP FIN Scan (-sF)</option>
                     <option value="-sX">TCP Xmas Scan (-sX)</option>
                 </select>
-                    </div>
-                    
-                    <div class="form-group">
+            </div>
+
+            <div class="form-group">
                 <label for="nmap-ports">PORT SPECIFICATION:</label>
                 <select id="nmap-ports">
                     <option value="">Default (1000 most common)</option>
@@ -333,8 +360,8 @@
                     <option value="--top-ports 1000">Top 1000 Ports</option>
                     <option value="custom">Custom Port Range</option>
                 </select>
-                    </div>
-                    
+            </div>
+
             <div class="form-group" id="nmap-custom-ports" style="display: none;">
                 <label for="nmap-custom-port-range">CUSTOM PORTS:</label>
                 <input type="text" id="nmap-custom-port-range" placeholder="80,443,8080-8090">
@@ -352,7 +379,7 @@
                     <option value="-T5">Insane (-T5) - Very Fast</option>
                 </select>
             </div>
-            
+
             <div class="form-group">
                 <label for="nmap-detection">DETECTION OPTIONS:</label>
                 <div class="checkbox-group">
@@ -369,29 +396,29 @@
                     <label><input type="checkbox" id="nmap-verbose" value="-v"> Verbose (-v)</label>
                     <label><input type="checkbox" id="nmap-debug" value="-d"> Debug (-d)</label>
                     <label><input type="checkbox" id="nmap-reason" value="--reason"> Show Reason (--reason)</label>
+                </div>
             </div>
-        </div>
-        
+
             <div class="form-group">
                 <label for="nmap-stealth">STEALTH OPTIONS:</label>
                 <div class="checkbox-group">
                     <label><input type="checkbox" id="nmap-fragment" value="-f"> Fragment Packets (-f)</label>
                     <label><input type="checkbox" id="nmap-decoy" value="-D RND:10"> Random Decoys (-D RND:10)</label>
                     <label><input type="checkbox" id="nmap-spoof" value="-S"> Spoof Source IP (-S)</label>
+                </div>
             </div>
         </div>
-    </div>
 
         <!-- JOHN Options -->
         <div id="john-options" class="tool-options" style="display: none;">
             <h3>JOHN THE RIPPER CONFIGURATION</h3>
             
-                    <div class="form-group">
+            <div class="form-group">
                 <label for="john-hash-file">HASH FILE:</label>
                 <input type="text" id="john-hash-file" placeholder="hashes.txt">
-                    </div>
+            </div>
 
-                    <div class="form-group">
+            <div class="form-group">
                 <label for="john-attack-mode">ATTACK MODE:</label>
                 <select id="john-attack-mode">
                     <option value="wordlist">Wordlist Attack</option>
@@ -400,7 +427,7 @@
                     <option value="rules">Rules-based Attack</option>
                     <option value="mask">Mask Attack</option>
                 </select>
-                    </div>
+            </div>
 
             <div class="form-group" id="john-wordlist-group">
                 <label for="john-wordlist">WORDLIST:</label>
@@ -822,9 +849,9 @@
                 <label for="hydra-http-path">HTTP PATH/FORM:</label>
                 <input type="text" id="hydra-http-path" placeholder="/login.php:username=^USER^&password=^PASS^:Invalid">
                 <small>Format: path:form_data:failure_string</small>
-                </div>
+            </div>
 
-                        <div class="form-group">
+            <div class="form-group">
                 <label for="hydra-threads">THREADS:</label>
                 <select id="hydra-threads">
                     <option value="">Default (16)</option>
@@ -835,24 +862,24 @@
                     <option value="-t 32">32 Threads (Fast)</option>
                     <option value="-t 64">64 Threads (Very Fast)</option>
                 </select>
-                        </div>
+            </div>
 
-                        <div class="form-group">
+            <div class="form-group">
                 <label for="hydra-options-extra">ADDITIONAL OPTIONS:</label>
                 <div class="checkbox-group">
                     <label><input type="checkbox" id="hydra-verbose" value="-v"> Verbose Output</label>
                     <label><input type="checkbox" id="hydra-debug" value="-d"> Debug Mode</label>
                     <label><input type="checkbox" id="hydra-continue" value="-f"> Stop on First Success</label>
                     <label><input type="checkbox" id="hydra-ssl" value="-S"> Use SSL</label>
-                        </div>
-                        </div>
-                        </div>
+                </div>
+            </div>
+        </div>
 
         <!-- GOBUSTER Options -->
         <div id="gobuster-options" class="tool-options" style="display: none;">
             <h3>GOBUSTER CONFIGURATION</h3>
             
-                        <div class="form-group">
+            <div class="form-group">
                 <label for="gobuster-mode">MODE:</label>
                 <select id="gobuster-mode">
                     <option value="dir">Directory/File Enumeration (dir)</option>
@@ -860,7 +887,7 @@
                     <option value="vhost">Virtual Host Enumeration (vhost)</option>
                     <option value="s3">Amazon S3 Bucket Enumeration (s3)</option>
                 </select>
-                        </div>
+            </div>
 
             <div class="form-group" id="gobuster-url-group">
                 <label for="gobuster-url">TARGET URL:</label>
@@ -874,12 +901,12 @@
                     <option value="http://localhost:8000">http://localhost:8000</option>
                     <option value="custom">Custom URL</option>
                 </select>
-                        </div>
+            </div>
 
             <div class="form-group" id="gobuster-custom-url" style="display: none;">
                 <label for="gobuster-custom-url-input">CUSTOM URL:</label>
                 <input type="text" id="gobuster-custom-url-input" placeholder="http://target.com">
-                        </div>
+            </div>
 
             <div class="form-group" id="gobuster-domain-group" style="display: none;">
                 <label for="gobuster-domain">TARGET DOMAIN:</label>
@@ -890,14 +917,14 @@
                     <option value="target.com">target.com</option>
                     <option value="custom">Custom Domain</option>
                 </select>
-                        </div>
+            </div>
 
             <div class="form-group" id="gobuster-custom-domain" style="display: none;">
                 <label for="gobuster-custom-domain-input">CUSTOM DOMAIN:</label>
                 <input type="text" id="gobuster-custom-domain-input" placeholder="target.com">
-                        </div>
+            </div>
 
-                        <div class="form-group">
+            <div class="form-group">
                 <label for="gobuster-wordlist">WORDLIST:</label>
                 <select id="gobuster-wordlist">
                     <option value="/usr/share/wordlists/dirb/common.txt">DIRB Common</option>
@@ -908,20 +935,20 @@
                     <option value="/usr/share/wordlists/seclists/Discovery/DNS/subdomains-top1million-5000.txt">Top 5K Subdomains</option>
                     <option value="custom">Custom Wordlist</option>
                 </select>
-                        </div>
+            </div>
 
             <div class="form-group" id="gobuster-custom-wordlist" style="display: none;">
                 <label for="gobuster-custom-wordlist-path">CUSTOM WORDLIST:</label>
                 <input type="text" id="gobuster-custom-wordlist-path" placeholder="/path/to/wordlist.txt">
-                        </div>
+            </div>
 
             <div class="form-group" id="gobuster-extensions-group">
                 <label for="gobuster-extensions">FILE EXTENSIONS:</label>
                 <input type="text" id="gobuster-extensions" placeholder="php,html,txt,js">
                 <small>Comma-separated list (e.g., php,html,txt,js)</small>
-                        </div>
+            </div>
 
-                        <div class="form-group">
+            <div class="form-group">
                 <label for="gobuster-threads">THREADS:</label>
                 <select id="gobuster-threads">
                     <option value="">Default (10)</option>
@@ -931,20 +958,20 @@
                     <option value="-t 50">50 Threads (Very Fast)</option>
                     <option value="-t 100">100 Threads (Aggressive)</option>
                 </select>
-                        </div>
+            </div>
 
-                        <div class="form-group">
+            <div class="form-group">
                 <label for="gobuster-status-codes">STATUS CODES:</label>
                 <input type="text" id="gobuster-status-codes" placeholder="200,204,301,302,307,401,403">
                 <small>Comma-separated HTTP status codes to include</small>
-                        </div>
+            </div>
 
-                        <div class="form-group">
+            <div class="form-group">
                 <label for="gobuster-user-agent">USER AGENT:</label>
                 <input type="text" id="gobuster-user-agent" placeholder="gobuster/3.0">
-                        </div>
+            </div>
 
-                        <div class="form-group">
+            <div class="form-group">
                 <label for="gobuster-timeout">TIMEOUT:</label>
                 <select id="gobuster-timeout">
                     <option value="">Default (10s)</option>
@@ -953,9 +980,9 @@
                     <option value="--timeout 30s">30 seconds</option>
                     <option value="--timeout 60s">60 seconds</option>
                 </select>
-                        </div>
+            </div>
 
-                        <div class="form-group">
+            <div class="form-group">
                 <label for="gobuster-options-extra">ADDITIONAL OPTIONS:</label>
                 <div class="checkbox-group">
                     <label><input type="checkbox" id="gobuster-verbose" value="-v"> Verbose Output</label>
@@ -964,13 +991,13 @@
                     <label><input type="checkbox" id="gobuster-expanded" value="-e"> Expanded Mode (show full URLs)</label>
                     <label><input type="checkbox" id="gobuster-follow-redirect" value="-r"> Follow Redirects</label>
                     <label><input type="checkbox" id="gobuster-include-length" value="-l"> Include Length</label>
-                        </div>
-                        </div>
-                        </div>
+                </div>
+            </div>
+        </div>
 
                 <button onclick="generateCommand()" id="generate-btn">GENERATE COMMAND</button>
                 <button onclick="clearOutput()">CLEAR OUTPUT</button>
-                        </div>
+            </div>
 
             <div id="status" class="status" style="display: none;"></div>
 
@@ -979,15 +1006,15 @@
                 <div id="output" class="output"></div>
                 <button onclick="copyToClipboard()">COPY COMMAND</button>
                 <button onclick="saveCommand()">SAVE TO FILE</button>
-                        </div>
-                        </div>
-                        </div>
+            </div>
+        </div>
+    </div>
 
     <hr>
 
     <div style="text-align: center; opacity: 0.7; font-size: 12px; margin-top: 30px;">
         SCRIPTRX v0.1.0 | SECURITY COMMAND BUILDER | FOR AUTHORIZED TESTING ONLY
-                        </div>
+    </div>
 
     <script>
         // UTC Clock
@@ -1070,8 +1097,8 @@
                     case 'incremental':
                     case 'single':
                         // No additional options needed
-                    break;
-            }
+                        break;
+                }
             });
 
             // Hydra username mode handler
