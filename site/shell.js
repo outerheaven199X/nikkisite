@@ -11,7 +11,6 @@ const PROJECTS = {
 };
 
 function setActive(route) {
-  console.log('setActive called with route:', route);
   // Tabs
   $$(".tab").forEach(b => b.setAttribute("aria-selected", String(b.dataset.route === route)));
   // Panes
@@ -19,26 +18,17 @@ function setActive(route) {
   $("#path").textContent = `tab: ${route}`;
   $("#crumb").textContent = route;
   // Lazy mount if needed
-  if (PROJECTS[route]) {
-    console.log('Mounting project:', route);
-    mountProject(route);
-  } else {
-    console.log('No project found for route:', route);
-  }
+  if (PROJECTS[route]) mountProject(route);
 }
 
 async function mountProject(route) {
-  console.log('mountProject called for:', route);
   const cfg = PROJECTS[route];
   const pane = $(`#pane-${route}`);
-  console.log('Found pane:', pane);
-  if (!pane || pane.dataset.mounted === "1") {
-    console.log('Pane not found or already mounted');
-    return;
-  }
+  if (!pane || pane.dataset.mounted === "1") return;
   
   if (cfg.type === "redirect") {
     // For interactive tools, redirect to dedicated pages
+    console.log('Creating redirect content for:', cfg.title);
     const bar = document.createElement("div");
     bar.className = "row";
     bar.style.marginBottom = "8px";
@@ -59,6 +49,7 @@ async function mountProject(route) {
     
     pane.appendChild(bar);
     pane.appendChild(description);
+    console.log('Content added to pane:', pane);
     
   } else if (cfg.type === "iframe") {
     const wrap = document.createElement("div");
@@ -105,7 +96,10 @@ function routeFromHash() {
 }
 
 // Events
-$$(".tab").forEach(b => b.addEventListener("click", () => goto(b.dataset.route)));
+$$(".tab").forEach(b => b.addEventListener("click", () => {
+  console.log('Tab clicked:', b.dataset.route);
+  goto(b.dataset.route);
+}));
 window.addEventListener("hashchange", () => setActive(routeFromHash()));
 window.addEventListener("DOMContentLoaded", () => setActive(routeFromHash()));
 
