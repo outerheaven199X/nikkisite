@@ -123,6 +123,14 @@ $$(".tab").forEach(b => b.addEventListener("click", () => goto(b.dataset.route))
 window.addEventListener("hashchange", () => setActive(routeFromHash()));
 window.addEventListener("DOMContentLoaded", () => setActive(routeFromHash()));
 
+// Handle resume PDF link to bypass hash routing
+document.addEventListener("click", (e) => {
+  if (e.target.tagName === "A" && e.target.href && e.target.href.includes("NIKKI_KAELAR_RESUME.pdf")) {
+    e.preventDefault();
+    window.open(e.target.href, "_blank");
+  }
+});
+
 // Keyboard: Ctrl/⌘ + 1..6
 window.addEventListener("keydown", (e) => {
   const ix = Number(e.key) - 1;
