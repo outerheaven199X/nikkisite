@@ -34,7 +34,8 @@ async function mountProject(route) {
     bar.style.marginBottom = "8px";
     bar.innerHTML = `<span class="pill">${cfg.title}</span>
       <a class="btn" href="${cfg.src}" target="_blank" rel="noopener">↗ open interactive demo</a>
-      <span class="muted">full-featured</span>`;
+      <span class="muted">full-featured</span>
+      <span class="about-build-link" data-tool="${route}" style="cursor: pointer; margin-left: 10px; text-decoration: underline;">(?) ABOUT THIS BUILD</span>`;
     
     const description = document.createElement("div");
     description.style.padding = "2rem";
@@ -47,8 +48,62 @@ async function mountProject(route) {
       <a href="${cfg.src}" class="btn" style="padding: 1rem 2rem; font-size: 1.1rem;">Launch ${cfg.title} →</a>
     `;
     
+    // Add build info table
+    const buildInfo = document.createElement("div");
+    buildInfo.style.cssText = `
+      margin-top: 2rem;
+      border: 1px solid #000;
+      background: #f9f9f9;
+      padding: 1rem;
+      text-align: left;
+      font-size: 12px;
+    `;
+    
+    const buildInfoContent = {
+      scriptrx: {
+        purpose: "Security tool command generation",
+        status: "Production-ready",
+        tech: "Vanilla JavaScript, Progressive UI"
+      },
+      omni: {
+        purpose: "Environmental data monitoring", 
+        status: "Production-ready",
+        tech: "Vanilla JavaScript, Real-time APIs"
+      },
+      honey: {
+        purpose: "Network honeypot monitoring",
+        status: "Deployed & operational", 
+        tech: "Node.js, Real attack data"
+      },
+      databox: {
+        purpose: "AI security education",
+        status: "Production-ready",
+        tech: "Node.js, SQLite FTS5, LLM adapters"
+      }
+    };
+    
+    const info = buildInfoContent[route] || { purpose: "Interactive demo", status: "Active", tech: "Web technologies" };
+    
+    buildInfo.innerHTML = `
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <td style="border: 1px solid #ccc; padding: 4px; font-weight: bold;">PURPOSE:</td>
+          <td style="border: 1px solid #ccc; padding: 4px;">${info.purpose}</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #ccc; padding: 4px; font-weight: bold;">STATUS:</td>
+          <td style="border: 1px solid #ccc; padding: 4px;">${info.status}</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #ccc; padding: 4px; font-weight: bold;">TECH:</td>
+          <td style="border: 1px solid #ccc; padding: 4px;">${info.tech}</td>
+        </tr>
+      </table>
+    `;
+    
     pane.appendChild(bar);
     pane.appendChild(description);
+    pane.appendChild(buildInfo);
     
   } else if (cfg.type === "iframe") {
     const wrap = document.createElement("div");
@@ -118,10 +173,78 @@ document.addEventListener('input', (e) => {
   }
 });
 
+// About Build Popup System
+function createAboutBuildPopup(toolName) {
+  const popup = document.createElement("div");
+  popup.id = "about-build-popup";
+  popup.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  `;
+  
+  const iframe = document.createElement("iframe");
+  iframe.src = `tools/about-${toolName}.html`;
+  iframe.style.cssText = `
+    width: 90%;
+    height: 90%;
+    max-width: 1000px;
+    max-height: 800px;
+    border: 2px solid #000;
+    background: white;
+  `;
+  
+  const closeBtn = document.createElement("button");
+  closeBtn.textContent = "CLOSE";
+  closeBtn.style.cssText = `
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #000;
+    color: white;
+    border: 1px solid #333;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    z-index: 10001;
+  `;
+  
+  closeBtn.addEventListener("click", () => {
+    document.body.removeChild(popup);
+  });
+  
+  popup.addEventListener("click", (e) => {
+    if (e.target === popup) {
+      document.body.removeChild(popup);
+    }
+  });
+  
+  popup.appendChild(iframe);
+  popup.appendChild(closeBtn);
+  document.body.appendChild(popup);
+}
+
 // Events
 $$(".tab").forEach(b => b.addEventListener("click", () => goto(b.dataset.route)));
 window.addEventListener("hashchange", () => setActive(routeFromHash()));
 window.addEventListener("DOMContentLoaded", () => setActive(routeFromHash()));
+
+// About Build link handlers
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("about-build-link")) {
+    e.preventDefault();
+    const tool = e.target.dataset.tool;
+    createAboutBuildPopup(tool);
+  }
+});
 
 // Handle resume PDF link to bypass hash routing
 document.addEventListener("click", (e) => {
